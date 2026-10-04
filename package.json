@@ -1,0 +1,17 @@
+{
+  "name": "does-ai-understand",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A five-minute interactive journey from picturing a dog to one of the open questions about AI: when a model turns numbers into language, is that understanding?",
+  "type": "module",
+  "scripts": {
+    "start": "sh scripts/serve-site.sh",
+    "dev": "python3 scripts/dev.py 4190"
+  },
+  "dependencies": {
+    "serve": "^14.2.1"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

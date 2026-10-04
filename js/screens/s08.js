@@ -1,0 +1,120 @@
+// Screen 8, predict the next token. A probability distribution, one token at a time.
+import { h } from '../ui.js';
+import { NEXT_FRANCE, NEXT_AFTER_PARIS, distribution, sample } from '../model.js';
+
+export const meta = { title: 'Predict the next token' };
+
+const label = (p) => (p < 0.005 ? '<1%' : `${Math.round(p * 100)}%`);
+
+// Top few tokens plus everything else, from a full distribution.
+function topRows(dist, n = 4) {
+  const sorted = [...dist].sort((a, b) => b.p - a.p);
+  const top = sorted.slice(0, n);
+  const rest = 1 - top.reduce((s, d) => s + d.p, 0);
+  return rest > 0.0005 ? [...top, { token: '… all others', p: rest, other: true }] : top;
+}
+
+function chart() {
+  const el = h('div', { class: 'bars', role: 'img' });
+  let rows = [];
+  function set(dist, { grow = true } = {}) {
+    const data = topRows(dist);
+    if (rows.length !== data.length) {
+      el.replaceChildren();
+      rows = data.map(() => ({
+        row: h('div', { class: 'brow' }),
+        name: h('span', { class: 'bl' }),
+        fill: h('span', { class: 'bfill' }),
+        pct: h('span', { class: 'bp' }),
+      }));
+      rows.forEach((r) => {
+        r.row.append(r.name, h('span', { class: 'btrack', 'aria-hidden': 'true' }, r.fill), r.pct);
+        el.append(r.row);
+      });
+    }
+    data.forEach((d, i) => {
+      const r = rows[i];
+      r.name.textContent = d.token;
+      r.row.classList.toggle('other', !!d.other);
+      r.pct.textContent = label(d.p);
+      r.fill.style.transform = `scaleX(${grow ? d.p : 0})`;
+    });
+    el.setAttribute('aria-label', 'Probabilities for the next token: ' + data.map((d) => `${d.token} ${label(d.p)}`).join(', '));
+    return data;
+  }
+  return { el, set, rows: () => rows };
+}
+
+export default async function run(ctx) {
+  const slot = h('span', { class: 'p-slot' });
+  const prompt = h('p', { class: 'prompt', 'aria-label': 'The capital of France is' }, h('span', {}, 'The capital of France is'), slot, h('span', { class: 'caret', 'aria-hidden': 'true' }));
+  await ctx.add(prompt, { hold: 1500 });
+  ctx.learn('probability');
+
+  const c = chart();
+  await ctx.add(c.el, { hold: 300 });
+  c.set(distribution(NEXT_FRANCE), { grow: false });
+  await ctx.wait(500);
+  c.set(distribution(NEXT_FRANCE));
+  await ctx.wait(2400);
+
+  await ctx.say('The model doesn’t simply retrieve the answer.', { cls: 'mid', hold: 2000 });
+  await ctx.say('It produces a probability distribution over possible next tokens.', { cls: 'mid', hold: 2400 });
+
+  // Paris is chosen and folds into the sentence.
+  c.el.classList.add('chosen');
+  c.el.querySelector('.brow').classList.add('win');
+  await ctx.wait(900);
+  slot.textContent = ' Paris';
+  slot.classList.add('in');
+  await ctx.wait(1100);
+  await ctx.say('And now “Paris” becomes part of the context.', { cls: 'mid', hold: 1700 });
+
+  // The new context gets its own prediction: the loop.
+  c.el.classList.remove('chosen');
+  c.set(distribution(NEXT_AFTER_PARIS));
+  c.el.querySelector('.brow').classList.add('win');
+  await ctx.wait(1900);
+  slot.textContent = ' Paris.';
+  await ctx.wait(900);
+  await ctx.say('The sentence gets fed back into the system.', { cls: 'mid', hold: 1000 });
+
+  const flow = ['prompt', 'prediction', 'new token', 'updated context'];
+  const loop = h(
+    'div',
+    { class: 'loopflow', role: 'img', 'aria-label': 'A loop: prompt, prediction, new token, updated context, and back to prediction, again and again.' },
+    ...flow.flatMap((f, i) => [h('span', { class: 'chip step' }, f), i < flow.length - 1 ? h('span', { class: 'arrow', 'aria-hidden': 'true' }, '→') : null]),
+    h('span', { class: 'again', 'aria-hidden': 'true' }, '↺ repeat'),
+  );
+  await ctx.add(loop, { hold: 1800 });
+  await ctx.say('One token at a time.', { cls: 'big', hold: 1900 });
+
+  // Play: same scores, different draws.
+  await ctx.clear();
+  await ctx.say('Try it. The model has scored “The capital of France is”. Draw from those scores yourself.', { cls: 'mid', hold: 400 });
+  const play = chart();
+  const tally = new Map();
+  const tallyEl = h('p', { class: 'tally', 'aria-live': 'polite' }, 'Nothing drawn yet.');
+  const slider = h('input', { type: 'range', min: 0.2, max: 2.5, step: 0.1, value: 1, id: 'temp', 'aria-describedby': 'temp-note' });
+  const tempVal = h('output', { for: 'temp' }, '1.0');
+  const draw = h('button', { class: 'btn ghost', type: 'button' }, h('span', { class: 'btn-label' }, 'Draw a token'));
+  const redraw = () => play.set(distribution(NEXT_FRANCE, Number(slider.value)));
+  slider.addEventListener('input', () => {
+    tempVal.textContent = Number(slider.value).toFixed(1);
+    redraw();
+  });
+  draw.addEventListener('click', () => {
+    const t = sample(distribution(NEXT_FRANCE, Number(slider.value)));
+    tally.set(t, (tally.get(t) || 0) + 1);
+    const total = [...tally.values()].reduce((a, b) => a + b, 0);
+    tallyEl.textContent = `${total} drawn: ` + [...tally.entries()].sort((a, b) => b[1] - a[1]).map(([k, v]) => `${k} ×${v}`).join(' · ');
+  });
+  const controls = h('div', { class: 'ctl' }, h('label', { for: 'temp' }, 'Randomness'), slider, tempVal, draw);
+  await ctx.add(play.el, { hold: 200 });
+  redraw();
+  await ctx.add(controls, { hold: 300 });
+  await ctx.add(tallyEl, { hold: 200 });
+  await ctx.say('Low randomness almost always picks the top token. High randomness lets unlikely ones through. The scores are the same; only the drawing changes.', { id: 'temp-note', cls: 'caption', hold: 400 });
+  await ctx.say('Simplified: the probabilities are illustrative, and real models split text into tokens differently from whole words.', { cls: 'caption', hold: 500 });
+  await ctx.button('Next');
+}

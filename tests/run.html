@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Does AI Understand? tests</title>
+  <style>
+    body { font: 15px/1.5 ui-monospace, Menlo, monospace; margin: 2rem; max-width: 56rem; }
+    .pass { color: #1a7f37; } .fail { color: #b3261e; font-weight: 700; }
+    h1 { font: 600 1.2rem system-ui; }
+  </style>
+</head>
+<body>
+  <h1>Does AI Understand? — tests</h1>
+  <pre id="out"></pre>
+  <script type="module">
+    import { softmax, distribution, sample, mulberry32, embeddingFor, LATENT, similarity, nearest, SENTENCE, attentionFrom, glowColor, DOG_CONTEXTS, FACETS, NEXT_FRANCE, NEXT_AFTER_PARIS } from '../js/model.js';
+    import { ITEMS } from '../js/knowledge.js';
+
+    const out = document.getElementById('out');
+    let passed = 0, failed = 0;
+    const t = (name, fn) => {
+      try {
+        const r = fn();
+        if (r === false) throw new Error('returned false');
+        passed++;
+        out.innerHTML += `<span class="pass">PASS</span> ${name}\n`;
+      } catch (e) {
+        failed++;
+        out.innerHTML += `<span class="fail">FAIL</span> ${name}: ${e.message}\n`;
+      }
+    };
+    const eq = (a, b, msg = '') => { if (a !== b) throw new Error(`${msg} expected ${b}, got ${a}`); };
+    const near = (a, b, tol, msg = '') => { if (Math.abs(a - b) > tol) throw new Error(`${msg} expected ${b} ±${tol}, got ${a}`); };
+    const sum = (xs) => xs.reduce((a, b) => a + b, 0);
+
+    // ---- probability ----
+    t('next-token tables sum to 1', () => {
+      near(sum(NEXT_FRANCE.map(([, p]) => p)), 1, 1e-9, 'france');
+      near(sum(NEXT_AFTER_PARIS.map(([, p]) => p)), 1, 1e-9, 'after paris');
+    });
+    t('softmax sums to 1 at every temperature', () => {
+      for (const T of [0.2, 0.5, 1, 1.7, 2.5]) near(sum(softmax([3, 1, -2, 0.5], T)), 1, 1e-9, `T=${T}`);
+    });
+    t('distribution at T=1 reproduces the authored table', () => {
+      distribution(NEXT_FRANCE, 1).forEach((d, i) => near(d.p, NEXT_FRANCE[i][1], 1e-9, d.token));
+    });
+    t('higher temperature flattens: Paris share falls monotonically', () => {
+      let last = 2;
+      for (const T of [0.2, 0.6, 1, 1.5, 2.5]) {
+        const p = distribution(NEXT_FRANCE, T)[0].p;
+        if (!(p < last)) throw new Error(`not monotonic at T=${T}`);
+        last = p;
+      }
+    });
+    t('low temperature is nearly deterministic', () => {
+      if (distribution(NEXT_FRANCE, 0.2)[0].p < 0.999) throw new Error('Paris should dominate at T=0.2');
+    });
+    t('sampling follows the distribution (seeded)', () => {
+      const rnd = mulberry32(42);
+      const dist = distribution(NEXT_FRANCE, 1);
+      let paris = 0;
+      const N = 6000;
+      for (let i = 0; i < N; i++) if (sample(dist, rnd) === 'Paris') paris++;
+      near(paris / N, 0.94, 0.02, 'Paris share');
+    });
+
+    // ---- embeddings and latent space ----
+    t('embedding for "dog" starts with the numbers shown in the story', () => {
+      eq(JSON.stringify(embeddingFor('dog').slice(0, 4)), JSON.stringify([0.21, -0.73, 0.48, 0.09]));
+    });
+    t('embeddings are deterministic and word-specific', () => {
+      eq(JSON.stringify(embeddingFor('cat')), JSON.stringify(embeddingFor('cat')));
+      if (JSON.stringify(embeddingFor('cat')) === JSON.stringify(embeddingFor('car'))) throw new Error('cat == car');
+    });
+    t('settled space: dog is nearer cat and wolf than car', () => {
+      const P = LATENT.settled;
+      if (!(similarity(P.dog, P.cat) > similarity(P.dog, P.car))) throw new Error('cat vs car');
+      if (!(similarity(P.dog, P.wolf) > similarity(P.dog, P.car))) throw new Error('wolf vs car');
+    });
+    t('dog\'s three nearest neighbours include cat and wolf', () => {
+      const ids = nearest('dog', LATENT.settled, 3).map((n) => n.id);
+      if (!ids.includes('cat') || !ids.includes('wolf')) throw new Error(ids.join());
+    });
+    t('similarity is 1 at zero distance and falls with distance', () => {
+      eq(similarity([5, 5], [5, 5]), 1);
+      if (!(similarity([0, 0], [10, 0]) > similarity([0, 0], [40, 0]))) throw new Error('not decreasing');
+    });
+    t('every settled word has a position inside the field', () => {
+      for (const [id, [x, y]] of Object.entries(LATENT.settled)) if (x < 5 || x > 95 || y < 5 || y > 95) throw new Error(`${id} out of bounds`);
+    });
+
+    // ---- context ----
+    t('glow colour is computed and differs by sentence', () => {
+      const cols = DOG_CONTEXTS.map((c) => glowColor(c.facets).join());
+      eq(new Set(cols).size, 3, 'distinct colours');
+      glowColor(DOG_CONTEXTS[0].facets).forEach((v) => { if (v < 0 || v > 255) throw new Error('rgb range'); });
+    });
+    t('every context defines every facet in 0..1', () => {
+      for (const c of DOG_CONTEXTS) for (const f of FACETS) { const v = c.facets[f.id]; if (!(v >= 0 && v <= 1)) throw new Error(`${f.id} in "${c.text}"`); }
+    });
+
+    // ---- attention ----
+    t('attention rows sum to 1 for both heads', () => {
+      SENTENCE.forEach((_, i) => { near(sum(attentionFrom(i, 'A')), 1, 1e-9, `A ${i}`); near(sum(attentionFrom(i, 'B')), 1, 1e-9, `B ${i}`); });
+    });
+    t('attention is causal: no weight on later words', () => {
+      SENTENCE.forEach((_, i) => attentionFrom(i, 'A').forEach((w, j) => { if (j > i && w !== 0) throw new Error(`${i}->${j}`); }));
+    });
+    t('Pattern A: "it" attends most to "ball", then "dog"', () => {
+      const w = attentionFrom(SENTENCE.indexOf('it'), 'A');
+      const order = w.map((v, i) => [v, SENTENCE[i]]).sort((a, b) => b[0] - a[0]).map((x) => x[1]);
+      eq(order[0], 'ball'); eq(order[1], 'dog');
+    });
+    t('Pattern B favours the previous word', () => {
+      SENTENCE.forEach((_, i) => { if (i < 1) return; const w = attentionFrom(i, 'B'); if (w.indexOf(Math.max(...w)) !== i) throw new Error(`token ${i}`); });
+    });
+
+    // ---- story integrity (reads the screen sources) ----
+    const files = Array.from({ length: 13 }, (_, i) => `../js/screens/s${String(i).padStart(2, '0')}.js`);
+    const sources = await Promise.all(files.map((f) => fetch(f).then((r) => r.text())));
+
+    t('knowledge ids are unique and every ctx.learn() id exists', () => {
+      eq(new Set(ITEMS.map((i) => i.id)).size, ITEMS.length, 'unique ids');
+      const ids = new Set(ITEMS.map((i) => i.id));
+      for (const s of sources) for (const m of s.matchAll(/ctx\.learn\('([a-z]+)'\)/g)) if (!ids.has(m[1])) throw new Error(`unknown id ${m[1]}`);
+    });
+    t('every taught concept is taught somewhere', () => {
+      const learned = new Set(sources.flatMap((s) => [...s.matchAll(/ctx\.learn\('([a-z]+)'\)/g)].map((m) => m[1])));
+      for (const i of ITEMS.filter((i) => !i.ahead)) if (!learned.has(i.id)) throw new Error(`${i.id} never learned`);
+    });
+    t('the last three items stay open (they are the next chapters)', () => {
+      eq(ITEMS.filter((i) => i.ahead).map((i) => i.id).join(), 'learning,reasoning,agents');
+    });
+    t('honesty rule: every simplified visual says so on screen (screens 2 to 8)', () => {
+      for (let i = 2; i <= 8; i++) if (!/Simplified:/.test(sources[i])) throw new Error(`screen ${i} lacks a "Simplified:" note`);
+    });
+    t('no anthropomorphic phrasing in screen copy', () => {
+      const banned = [/\bthe AI thinks\b/i, /\bthe AI remembers\b/i, /\bthe AI knows\b/i, /\bthe model thinks\b/i, /\bthe model remembers\b/i, /\bit understands\b/i];
+      sources.forEach((s, i) => banned.forEach((re) => { if (re.test(s)) throw new Error(`screen ${i}: ${re}`); }));
+    });
+    t('the story ends on a question, not a conclusion', () => {
+      if (!/understanding\?/.test(sources[11])) throw new Error('screen 11 should end on "understanding?"');
+    });
+    t('there is no right answer: screen 10 never says Correct', () => {
+      if (/Correct|Wrong|Right!/i.test(sources[10])) throw new Error('graded language');
+    });
+    t('screens 0 to 12 each export meta and a default run()', async () => {
+      for (const s of sources) if (!/export const meta/.test(s) || !/export default async function/.test(s)) throw new Error('missing export');
+    });
+
+    out.innerHTML += `\n${passed} passed, ${failed} failed\n`;
+    document.title = failed ? `FAIL ${failed}` : `PASS ${passed}`;
+  </script>
+</body>
+</html>

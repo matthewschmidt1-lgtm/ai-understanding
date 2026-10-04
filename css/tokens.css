@@ -1,0 +1,61 @@
+/* Design tokens. Light, warm paper; human = amber, machine = electric blue, shared = violet. */
+@property --mix { syntax: '<number>'; inherits: true; initial-value: 0; }
+@property --gr { syntax: '<number>'; inherits: true; initial-value: 233; }
+@property --gg { syntax: '<number>'; inherits: true; initial-value: 138; }
+@property --gb { syntax: '<number>'; inherits: true; initial-value: 43; }
+
+:root {
+  color-scheme: light;
+  --mix: 0;
+  --paper: #f5f1e8;
+  --paper-2: #ece6d8;
+  --ink: #17140f;
+  --ink-2: #474036;
+  --ink-3: #6b6558;
+  --line: rgb(23 20 15 / 0.14);
+  --card: rgb(255 255 255 / 0.55);
+
+  --human: #e98a2b;
+  --human-ink: #98490a;
+  --human-soft: #f7ddbb;
+  --ai: #3d4cf2;
+  --ai-ink: #2430b8;
+  --ai-soft: #d3d7ff;
+  --both: #8a4fd8;
+  --both-ink: #5b2ca3;
+  --both-soft: #e6d8f7;
+
+  --serif: ui-serif, 'New York', 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+  --sans: ui-sans-serif, -apple-system, 'SF Pro Text', system-ui, 'Segoe UI', Roboto, sans-serif;
+  --mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  --step-hero: clamp(3rem, 11vw, 7.6rem);
+  --step-big: clamp(2rem, 5.4vw, 3.6rem);
+  --step-mid: clamp(1.25rem, 2.7vw, 1.7rem);
+  --step-quiet: clamp(1.05rem, 2.1vw, 1.3rem);
+  --gutter: clamp(1.25rem, 5vw, 3rem);
+
+  --ease-out: cubic-bezier(0.2, 0.7, 0.1, 1);
+  --ease-io: cubic-bezier(0.65, 0, 0.35, 1);
+
+  --aurora-o: 1;
+  transition: --mix 2.4s var(--ease-io);
+}
+
+/* The one dark beat in the story: the moment of doubt. */
+body[data-theme='ink'] {
+  --paper: #14110d;
+  --paper-2: #1f1a14;
+  --ink: #f3eee2;
+  --ink-2: #cfc8b8;
+  --ink-3: #a39b8a;
+  --line: rgb(243 238 226 / 0.2);
+  --card: rgb(255 255 255 / 0.05);
+  --human-ink: #f2a862;
+  --human-soft: #4a2e10;
+  --ai-ink: #9aa4ff;
+  --ai-soft: #20245c;
+  --both-ink: #c9a6f5;
+  --both-soft: #35204f;
+  --aurora-o: 0.35;
+}
