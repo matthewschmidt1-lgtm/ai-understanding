@@ -55,7 +55,7 @@ function render() {
         { class: done ? 'done' : item.ahead ? 'ahead' : '' },
         h('span', { class: 'mark', 'aria-hidden': 'true' }, done ? '✓' : '○'),
         item.label,
-        h('span', { class: 'sr-only' }, done ? ' — learned' : item.ahead ? ' — still ahead' : ' — not yet'),
+        h('span', { class: 'sr-only' }, done ? ': learned' : item.ahead ? ': still ahead' : ': not yet'),
       );
     }),
   );

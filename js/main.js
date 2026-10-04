@@ -21,7 +21,7 @@ const LOADERS = [
 ];
 const LAST = LOADERS.length - 1;
 
-// How far human (amber) and machine (blue) have blended by each screen.
+// How far human (clay) and machine (slate) have blended by each screen.
 const MIX = [0, 0.04, 0.1, 0.18, 0.28, 0.38, 0.48, 0.58, 0.68, 0.76, 0.84, 1, 1];
 
 const stage = document.getElementById('stage');

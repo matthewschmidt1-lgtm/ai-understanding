@@ -60,11 +60,11 @@
 .verdict .choice { min-height: 10.5rem; }
 .verdict .ch-label { font-size: 1.8rem; letter-spacing: 0.02em; }
 .choices.row .choice { min-height: 5.5rem; }
-.choice.picked { transform: scale(1.06); border-color: var(--human); background: var(--human-soft); box-shadow: 0 24px 50px -20px rgb(233 138 43 / 0.6); }
-.verdict .choice.picked { border-color: var(--both); background: var(--both-soft); box-shadow: 0 24px 50px -20px rgb(138 79 216 / 0.55); }
+.choice.picked { transform: scale(1.06); border-color: var(--human); background: var(--human-soft); box-shadow: 0 24px 50px -20px rgb(196 112 63 / 0.6); }
+.verdict .choice.picked { border-color: var(--both); background: var(--both-soft); box-shadow: 0 24px 50px -20px rgb(94 139 78 / 0.55); }
 .choice.dim { opacity: 0.18; transform: scale(0.95); }
 .choice:disabled { cursor: default; }
-@media (hover: hover) { .choice:not(:disabled):hover { transform: translateY(-4px); border-color: var(--human); box-shadow: 0 22px 44px -22px rgb(233 138 43 / 0.55); } .verdict .choice:not(:disabled):hover { border-color: var(--both); box-shadow: 0 22px 44px -22px rgb(138 79 216 / 0.5); } }
+@media (hover: hover) { .choice:not(:disabled):hover { transform: translateY(-4px); border-color: var(--human); box-shadow: 0 22px 44px -22px rgb(196 112 63 / 0.55); } .verdict .choice:not(:disabled):hover { border-color: var(--both); box-shadow: 0 22px 44px -22px rgb(94 139 78 / 0.5); } }
 @media (max-width: 720px) {
   .choices.four { grid-template-columns: repeat(2, 1fr); }
   .choices.row, .choices.verdict { grid-template-columns: 1fr; }

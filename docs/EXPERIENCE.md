@@ -1,4 +1,4 @@
-# Does AI Understand? — experience, architecture and art direction
+# Does AI Understand? Experience, architecture and art direction
 
 One page that answers three questions: what is the experience, how is it built, and why does it look the way it does.
 
@@ -52,13 +52,13 @@ Both would be additive: `state.js` is the only place answers are written.
 
 ## 3. Art direction
 
-**Concept: two lights.** Human experience is warm amber; the machine is electric blue. They begin on opposite sides of the page and drift toward the middle as the story goes on, until a violet appears where they overlap. The page itself narrates the thesis: *the distinction is real, but the relationship is complicated.* The mix is one CSS variable, `--mix`, animated per screen (0 on arrival, 1 at the final reveal).
+**Concept: two lights.** Human experience is warm clay; the machine is cool river slate. They begin on opposite sides of the page and drift toward the middle as the story goes on, until a moss green appears where they overlap. The page itself narrates the thesis: *the distinction is real, but the relationship is complicated.* The mix is one CSS variable, `--mix`, animated per screen (0 on arrival, 1 at the final reveal).
 
 - **Materials:** warm paper (`#F5F1E8`) with a fine grain; frosted-glass cards (`backdrop-filter`) with hairline borders; nothing glossy, nothing drop-shadowed except the buttons.
-- **Lighting:** two slow-drifting colour fields (amber upper left, blue lower right), a violet field that grows with `--mix`, and a soft white spotlight that follows the pointer so the page feels lit rather than flat.
+- **Lighting:** two slow-drifting colour fields (clay upper left, slate lower right), a moss-green field that grows with `--mix`, and a soft white spotlight that follows the pointer so the page feels lit rather than flat.
 - **Depth:** type arrives out of focus and settles sharp (opacity, 16px rise, 10px blur). Fields drift on separate periods (38 s, 46 s, 52 s) so the background never repeats.
 - **Typography:** the system serif (New York on Apple devices, Iowan/Palatino/Georgia elsewhere) for everything the story *says*, tight at display sizes (-0.04em); system sans for controls and captions; monospace only for numbers. No font downloads, so first paint is instant.
-- **Palette:** ink `#17140F`, paper `#F5F1E8`, human `#E98A2B`, machine `#3D4CF2`, shared `#8A4FD8`. Text colours use darker `-ink` variants so everything meets WCAG AA.
+- **Palette:** ink `#17140F`, paper `#F5F1E8`, human `#C4703F`, machine `#3F6E8C`, shared `#5E8B4E`. Text colours use darker `-ink` variants so everything meets WCAG AA.
 - **Composition:** one column, one idea per screen, a lot of air. The top of the content is anchored, so earlier lines never jump when later ones arrive.
 - **The one dark beat:** screen 9 ("Wait.") flips the page to warm ink for about thirty seconds. It is the only time the page is dark, because it is the only time the story interrupts itself.
 - **Motion language:** slow, eased, and always meaningful: lines resolve into focus, arcs draw themselves, bars grow, numbers settle from scramble to fixed values. Reduced motion shortens waits to 30%, removes blur and drift, and keeps every state.
@@ -68,8 +68,8 @@ Both would be additive: `state.js` is the only place answers are written.
 
 | # | Screen | Message | Interaction | Motion / transition | Goal |
 |---|---|---|---|---|---|
-| load | Arrival (server-rendered) | *Does AI understand? Let's find out.* | none for ~2.6 s, then Start | words resolve one by one; a signal line draws itself amber → violet → blue | curiosity, instantly, with no explanation |
-| 1 | Think of a dog | *Your brain didn't retrieve a word. It activated a network.* | silence, then pick image / sound / memory / other | breathing ring; pick expands, others dim; the network draws, the visitor's choice lit amber | the visitor does the human thing first |
+| load | Arrival (server-rendered) | *Does AI understand? Let's find out.* | none for ~2.6 s, then Start | words resolve one by one; a signal line draws itself clay → moss → blue | curiosity, instantly, with no explanation |
+| 1 | Think of a dog | *Your brain didn't retrieve a word. It activated a network.* | silence, then pick image / sound / memory / other | breathing ring; pick expands, others dim; the network draws, the visitor's choice lit clay | the visitor does the human thing first |
 | 2 | Numbers | *An LLM starts with numbers.* | none (watch) | word → token → numbers scramble then settle | the surprise |
 | 3 | Latent space | *A useful representation captures relationships.* | click cat / wolf / car; tap any word for neighbours | points glide; the field fills out; nearest-neighbour lines with similarity | embeddings as geometry; no wrong answer |
 | 4 | Context | *The word didn't change. Its context did.* | none (watch) | one word, three sentences, a computed glow and facet bars | meaning depends on context |
@@ -79,7 +79,7 @@ Both would be additive: `state.js` is the only place answers are written.
 | 8 | Next token | *A distribution over tokens, one at a time.* | the loop plays; then dial randomness and draw | bars grow; Paris folds into the sentence; the loop appears | probability, felt rather than explained |
 | 9 | Doubt | *Humans do something strangely similar.* | none | the page goes dark; two trees of "dog" | the interruption |
 | 10 | Experiment | *What do you think?* | yes / no / not sure | every answer gets "Reasonable." | commit before the reveal |
-| 11 | Final reveal | *Maybe the question is how something so different looks so familiar.* | complete "An LLM isn't simply … It's …" | two roads converge on one violet question | the metric: can they say a difference in their own words |
+| 11 | Final reveal | *Maybe the question is how something so different looks so familiar.* | complete "An LLM isn't simply … It's …" | two roads converge on one moss-green question | the metric: can they say a difference in their own words |
 | 12 | Keep going | four chapters, announced as coming next | recap of what they know; Start again | the corner list fills | the doorway, never a dead end |
 
 **Conversion goals.** Primary: finish and write the sentence. Secondary: continue into the next chapters (not built yet, so announced honestly).

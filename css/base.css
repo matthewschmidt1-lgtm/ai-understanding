@@ -25,10 +25,10 @@ h1, h2, h3, p, ol, ul, figure, blockquote { margin: 0; }
 
 /* ---------- atmosphere: light, depth, grain ---------- */
 .world { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
-.aurora { position: absolute; width: 70vmax; aspect-ratio: 1; border-radius: 50%; filter: blur(60px); opacity: calc(0.5 * var(--aurora-o)); transition: opacity 1.4s; will-change: transform; }
-.a1 { left: calc(-28vmax + var(--mix) * 36vmax); top: -10vmax; background: radial-gradient(circle, rgb(233 138 43 / 0.55), transparent 62%); animation: drift1 38s ease-in-out infinite alternate; }
-.a2 { right: calc(-30vmax + var(--mix) * 38vmax); bottom: -22vmax; background: radial-gradient(circle, rgb(61 76 242 / 0.42), transparent 62%); animation: drift2 46s ease-in-out infinite alternate; }
-.a3 { left: 50%; top: 50%; width: 60vmax; margin: -30vmax 0 0 -30vmax; background: radial-gradient(circle, rgb(138 79 216 / 0.5), transparent 60%); opacity: calc(var(--mix) * 0.55 * var(--aurora-o)); animation: drift3 52s ease-in-out infinite alternate; }
+.aurora { position: absolute; width: 70vmax; aspect-ratio: 1; border-radius: 50%; filter: blur(60px); opacity: calc(0.7 * var(--aurora-o)); transition: opacity 1.4s; will-change: transform; }
+.a1 { left: calc(-28vmax + var(--mix) * 36vmax); top: -10vmax; background: radial-gradient(circle, rgb(196 112 63 / 0.55), transparent 62%); animation: drift1 38s ease-in-out infinite alternate; }
+.a2 { right: calc(-30vmax + var(--mix) * 38vmax); bottom: -22vmax; background: radial-gradient(circle, rgb(63 110 140 / 0.42), transparent 62%); animation: drift2 46s ease-in-out infinite alternate; }
+.a3 { left: 50%; top: 50%; width: 60vmax; margin: -30vmax 0 0 -30vmax; background: radial-gradient(circle, rgb(94 139 78 / 0.5), transparent 60%); opacity: calc(var(--mix) * 0.8 * var(--aurora-o)); animation: drift3 52s ease-in-out infinite alternate; }
 @keyframes drift1 { to { transform: translate(8vmax, 10vmax) scale(1.12); } }
 @keyframes drift2 { to { transform: translate(-9vmax, -6vmax) scale(1.08); } }
 @keyframes drift3 { to { transform: translate(-6vmax, 8vmax) scale(0.92); } }
@@ -51,7 +51,7 @@ body[data-screen='0'] .chrome, body[data-screen='0'] .chrome-foot { opacity: 0; 
 .know-btn { display: inline-flex; align-items: center; gap: 0.55rem; min-height: 44px; padding: 0.5rem 1rem; border-radius: 99px; border: 1px solid var(--line); background: var(--card); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); font: 500 0.78rem var(--sans); letter-spacing: 0.03em; }
 .know-dot { width: 8px; height: 8px; border-radius: 50%; background: linear-gradient(135deg, var(--human), var(--ai)); }
 .know-btn.pulse { animation: knowPulse 1.6s var(--ease-out); }
-@keyframes knowPulse { 0% { box-shadow: 0 0 0 0 rgb(138 79 216 / 0.55); } 100% { box-shadow: 0 0 0 18px rgb(138 79 216 / 0); } }
+@keyframes knowPulse { 0% { box-shadow: 0 0 0 0 rgb(94 139 78 / 0.55); } 100% { box-shadow: 0 0 0 18px rgb(94 139 78 / 0); } }
 .know-panel { position: absolute; right: 0; top: calc(100% + 0.5rem); width: min(18rem, calc(100vw - 2.5rem)); padding: 1.1rem 1.2rem; border-radius: 20px; border: 1px solid var(--line); background: color-mix(in srgb, var(--paper) 88%, transparent); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); box-shadow: 0 24px 60px -24px rgb(23 20 15 / 0.35); }
 .know-panel[hidden] { display: none; }
 .know-panel h2 { font: 600 0.7rem var(--sans); letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 0.7rem; }

@@ -1,4 +1,4 @@
-/* Design tokens. Light, warm paper; human = amber, machine = electric blue, shared = violet. */
+/* Design tokens. Light, warm paper; human = clay, machine = river slate, shared = moss green. */
 @property --mix { syntax: '<number>'; inherits: true; initial-value: 0; }
 @property --gr { syntax: '<number>'; inherits: true; initial-value: 233; }
 @property --gg { syntax: '<number>'; inherits: true; initial-value: 138; }
@@ -15,15 +15,15 @@
   --line: rgb(23 20 15 / 0.14);
   --card: rgb(255 255 255 / 0.55);
 
-  --human: #e98a2b;
-  --human-ink: #98490a;
-  --human-soft: #f7ddbb;
-  --ai: #3d4cf2;
-  --ai-ink: #2430b8;
-  --ai-soft: #d3d7ff;
-  --both: #8a4fd8;
-  --both-ink: #5b2ca3;
-  --both-soft: #e6d8f7;
+  --human: #C4703F;
+  --human-ink: #8A4420;
+  --human-soft: #F0D9C6;
+  --ai: #3F6E8C;
+  --ai-ink: #2A5068;
+  --ai-soft: #D4E2EA;
+  --both: #5E8B4E;
+  --both-ink: #3D6B33;
+  --both-soft: #DCE8D2;
 
   --serif: ui-serif, 'New York', 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
   --sans: ui-sans-serif, -apple-system, 'SF Pro Text', system-ui, 'Segoe UI', Roboto, sans-serif;
@@ -51,11 +51,11 @@ body[data-theme='ink'] {
   --ink-3: #a39b8a;
   --line: rgb(243 238 226 / 0.2);
   --card: rgb(255 255 255 / 0.05);
-  --human-ink: #f2a862;
-  --human-soft: #4a2e10;
-  --ai-ink: #9aa4ff;
-  --ai-soft: #20245c;
-  --both-ink: #c9a6f5;
-  --both-soft: #35204f;
+  --human-ink: #E3A47A;
+  --human-soft: #3F2616;
+  --ai-ink: #8DBAD3;
+  --ai-soft: #1B3140;
+  --both-ink: #A9CF96;
+  --both-soft: #243A1C;
   --aurora-o: 0.35;
 }

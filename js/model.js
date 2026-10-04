@@ -78,11 +78,11 @@ export function nearest(id, positions, k = 3) {
 
 // ---------- context ----------
 export const FACETS = [
-  { id: 'animal', label: 'animal', rgb: [233, 138, 43] },
-  { id: 'motion', label: 'motion', rgb: [214, 76, 96] },
-  { id: 'size', label: 'size', rgb: [31, 150, 140] },
-  { id: 'symbol', label: 'symbol', rgb: [138, 79, 216] },
-  { id: 'space', label: 'room it needs', rgb: [61, 76, 242] },
+  { id: 'animal', label: 'animal', rgb: [196, 112, 63] },
+  { id: 'motion', label: 'motion', rgb: [168, 82, 66] },
+  { id: 'size', label: 'size', rgb: [122, 150, 92] },
+  { id: 'symbol', label: 'symbol', rgb: [188, 142, 58] },
+  { id: 'space', label: 'room it needs', rgb: [63, 110, 140] },
 ];
 
 export const DOG_CONTEXTS = [
@@ -155,7 +155,7 @@ export const NEXT_FRANCE = [
 export const NEXT_AFTER_PARIS = [
   ['.', 0.58],
   [',', 0.31],
-  ['—', 0.03],
+  [';', 0.03],
   ['and', 0.02],
   ['(other)', 0.06],
 ];
