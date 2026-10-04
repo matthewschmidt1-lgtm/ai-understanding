@@ -25,6 +25,7 @@ js/knowledge.js       "What you now know" corner list
 js/state.js           per-visit answers (sessionStorage, memory fallback)
 js/model.js           the deterministic "model": softmax, attention rows, latent positions, embeddings
 js/ui.js              h() DOM/SVG helper
+js/layerviz.js        the looping figures inside each black-box layer (screen 6)
 js/screens/sNN.js     one module per screen, loaded on demand
 tests/run.html        26 browser tests (model maths + story-integrity rules)
 ```
@@ -74,7 +75,7 @@ Both would be additive: `state.js` is the only place answers are written.
 | 3 | Latent space | *A useful representation captures relationships.* | click cat / wolf / car; tap any word for neighbours | points glide; the field fills out; nearest-neighbour lines with similarity | embeddings as geometry; no wrong answer |
 | 4 | Context | *The word didn't change. Its context did.* | none (watch) | one word, three sentences, a computed glow and facet bars | meaning depends on context |
 | 5 | Attention | *Attention lets parts of the context influence one another.* | hover or tap "it"; any word; two patterns | arcs draw from the word to earlier words, weighted | the first big payoff: you can see information flow |
-| 6 | The black box | *There is a huge sequence of numerical transformations.* | open the box; click layers | the stack unfolds; the residual stream lights up | de-mystify without a diagram dump |
+| 6 | The black box | *There is a huge sequence of numerical transformations.* | open the box; open any layer to play its animation (tokens split, numbers grow, attention flows, and so on) | the stack unfolds; each layer opens into a looping figure | de-mystify without a diagram dump |
 | 7 | The machine runs | *So what does it do with that state?* | none | a pulse passes layer by layer | one internal state |
 | 8 | Next token | *A distribution over tokens, one at a time.* | the loop plays; then dial randomness and draw | bars grow; Paris folds into the sentence; the loop appears | probability, felt rather than explained |
 | 9 | Doubt | *Humans do something strangely similar.* | none | the page goes dark; two trees of "dog" | the interruption |

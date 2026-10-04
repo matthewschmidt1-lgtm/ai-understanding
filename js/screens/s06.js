@@ -1,6 +1,7 @@
 // Screen 6, open the black box. The same five words go in; a stack of operations comes out.
 import { h } from '../ui.js';
 import { motion } from '../engine.js';
+import { VIZ, WATCH } from '../layerviz.js';
 
 export const meta = { title: 'Open the black box' };
 
@@ -27,14 +28,22 @@ function closed() {
   );
 }
 
-function stack(onPick) {
-  const rows = LAYERS.map((l, i) =>
-    h(
-      'li',
-      { class: `lay lay-${l.id}`, style: { '--i': i } },
-      h('button', { class: 'lay-btn', type: 'button', 'aria-pressed': 'false', 'data-id': l.id, onClick: (e) => onPick(l, e.currentTarget) }, h('span', { class: 'lay-name' }, l.name), l.id === 'layers' ? h('span', { class: 'lay-x', 'aria-hidden': 'true' }, '× dozens') : null),
-    ),
-  );
+// Each layer is an accordion row: opening it plays that layer's looping figure right under the button.
+function stack(onToggle) {
+  const rows = LAYERS.map((l, i) => {
+    const panel = h(
+      'div',
+      { class: 'lay-panel', id: `lp-${l.id}` },
+      h('div', { class: 'lay-panel-in' }, h('div', { class: 'lay-card' }, VIZ[l.id](), h('p', { class: 'lay-note' }, l.note), h('p', { class: 'lay-watch' }, WATCH[l.id]))),
+    );
+    const btn = h(
+      'button',
+      { class: 'lay-btn', type: 'button', 'aria-expanded': 'false', 'aria-controls': `lp-${l.id}`, 'data-id': l.id, onClick: () => onToggle(l) },
+      h('span', { class: 'lay-name' }, l.name),
+      l.id === 'layers' ? h('span', { class: 'lay-x', 'aria-hidden': 'true' }, '× dozens') : null,
+    );
+    return h('li', { class: `lay lay-${l.id}`, style: { '--i': i } }, btn, panel);
+  });
   return h('ol', { class: 'stack', 'aria-label': 'Inside the model, top to bottom' }, h('span', { class: 'spine', 'aria-hidden': 'true' }), ...rows);
 }
 
@@ -46,16 +55,20 @@ export default async function run(ctx) {
   await ctx.clear({ keep: [box] });
 
   const visited = new Set();
-  const desc = h('p', { class: 'lay-desc', 'aria-live': 'polite' }, 'Choose a layer.');
-  const stackEl = stack((layer, btn) => {
-    stackEl.querySelectorAll('.lay-btn').forEach((b) => {
-      b.setAttribute('aria-pressed', String(b === btn));
-      b.classList.toggle('on', b === btn);
+  let stackEl;
+  const open = (id, { count = true } = {}) => {
+    const row = stackEl.querySelector(`.lay-${id}`);
+    const willOpen = !row.classList.contains('open');
+    stackEl.querySelectorAll('.lay').forEach((r) => {
+      const on = r === row && willOpen;
+      r.classList.toggle('open', on);
+      r.querySelector('.lay-btn').setAttribute('aria-expanded', String(on));
     });
-    stackEl.classList.toggle('stream-on', layer.id === 'residual');
-    desc.textContent = layer.note;
-    visited.add(layer.id);
-  });
+    stackEl.classList.toggle('stream-on', willOpen && id === 'residual');
+    if (willOpen && count) visited.add(id);
+    if (willOpen) setTimeout(() => row.scrollIntoView({ block: 'nearest', behavior: motion.reduced ? 'auto' : 'smooth' }), 650);
+  };
+  stackEl = stack((layer) => open(layer.id));
   box.classList.add('open');
   const holder = h('div', { class: 'stack-wrap' }, stackEl);
   box.append(holder);
@@ -63,17 +76,17 @@ export default async function run(ctx) {
   await ctx.wait(500);
   holder.classList.add('open');
   await ctx.wait(2600);
-  await ctx.add(desc, { hold: 1200 });
-  await ctx.say('Each part can be opened. Try a few.', { cls: 'caption', hold: 400 });
+  open('tokens', { count: false });
+  await ctx.say('Choose a layer to see what it does. Open a few.', { cls: 'caption', hold: 400 });
 
-  // Let curiosity run: continue once they have looked at a few, or after a while.
+  // Let curiosity run: Continue appears once they have opened a few layers, and they choose when to leave.
   await ctx.guard(
     new Promise((resolve) => {
-      const check = () => visited.size >= 3 && resolve();
-      stackEl.addEventListener('click', check);
-      setTimeout(resolve, 24000 * motion.k);
+      stackEl.addEventListener('click', () => visited.size >= 3 && resolve());
+      setTimeout(resolve, 45000 * motion.k);
     }),
   );
+  await ctx.button('Continue', { variant: 'ghost' });
   await ctx.clear({ keep: [box] });
   await ctx.say('There isn’t a little person inside the AI reading the sentence.', { cls: 'mid', hold: 2300 });
   await ctx.say('There is a huge sequence of numerical transformations.', { cls: 'big', hold: 1800 });

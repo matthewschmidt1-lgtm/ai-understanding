@@ -105,17 +105,93 @@
 .stream-on .spine { opacity: 1; box-shadow: 0 0 16px rgb(94 139 78 / 0.7); }
 .lay { position: relative; opacity: 0; transform: translateX(-10px); transition: opacity 0.7s var(--ease-out) calc(0.9s + var(--i) * 0.22s), transform 0.7s var(--ease-out) calc(0.9s + var(--i) * 0.22s); }
 .stack-wrap.open .lay { opacity: 1; transform: none; }
-.lay::before { content: ''; position: absolute; left: -1.45rem; top: 50%; width: 0.9rem; height: 1px; background: var(--ink-3); opacity: 0.5; }
+.lay::before { content: ''; position: absolute; left: -1.45rem; top: 23px; width: 0.9rem; height: 1px; background: var(--ink-3); opacity: 0.5; }
 .lay-btn { width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 0.6rem; min-height: 46px; padding: 0.7rem 1.1rem; border-radius: 14px; border: 1px solid var(--line); background: var(--paper); text-align: left; font: 600 0.74rem var(--sans); letter-spacing: 0.15em; text-transform: uppercase; transition: background-color 0.3s, color 0.3s, border-color 0.3s; }
 .lay-attention .lay-btn { border-left: 3px solid var(--ai); }
 .lay-mlp .lay-btn { border-left: 3px solid var(--human); }
 .lay-residual .lay-btn { border-left: 3px solid var(--both); }
 .lay-layers .lay-btn { border-style: dashed; }
 .lay-x { font: 500 0.72rem var(--mono); letter-spacing: 0; text-transform: none; color: var(--ink-3); }
-.lay-btn.on { background: var(--ink); color: var(--paper); }
-.lay-btn.on .lay-x { color: var(--paper); }
-@media (hover: hover) { .lay-btn:not(.on):hover { border-color: var(--ink-3); } }
-.lay-desc { min-height: 3.2em; max-width: 28rem; font: 400 var(--step-quiet) / 1.4 var(--serif); color: var(--ink-2); }
+.lay.open .lay-btn { background: var(--ink); color: var(--paper); }
+.lay.open .lay-x { color: var(--paper); }
+@media (hover: hover) { .lay:not(.open) .lay-btn:hover { border-color: var(--ink-3); } }
+.lay-btn::after { content: '+'; margin-left: auto; font: 400 1.1rem var(--sans); letter-spacing: 0; opacity: 0.55; }
+.lay.open .lay-btn::after { content: '−'; }
+.lay-panel { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.6s var(--ease-io); }
+.lay.open .lay-panel { grid-template-rows: 1fr; }
+.lay-panel-in { overflow: hidden; min-height: 0; visibility: hidden; transition: visibility 0s 0.6s; }
+.lay.open .lay-panel-in { visibility: visible; transition-delay: 0s; }
+.lay-card { margin-top: 0.45rem; padding: 1rem 1rem 0.9rem; border-radius: 16px; border: 1px solid var(--line); background: var(--card); display: grid; justify-items: center; gap: 0.45rem; text-align: center; opacity: 0; transition: opacity 0.5s 0.2s; }
+.lay.open .lay-card { opacity: 1; }
+.lay-note { font: 400 1.05rem / 1.4 var(--serif); }
+.lay-watch { font: 400 0.8rem / 1.45 var(--sans); color: var(--ink-3); max-width: 22rem; }
+
+/* layer figures: base styles are the finished state; keyframes loop them (6s) while the row is open */
+.viz { width: 100%; max-width: 22rem; height: auto; }
+.lay:not(.open) .viz, .lay:not(.open) .viz * { animation-play-state: paused; }
+.vz-t { font: 500 11px var(--sans); fill: var(--ink-2); text-anchor: middle; }
+.vz-t.start { text-anchor: start; }
+.vz-t.end { text-anchor: end; }
+.vz-w { font: 400 13px var(--serif); fill: var(--ink); }
+.vz-w.hot { fill: var(--ai-ink); font-weight: 600; }
+.vz-cap-t { font: 600 9.5px var(--sans); letter-spacing: 0.1em; text-transform: uppercase; fill: var(--ink-3); }
+.vz-cap { font: 400 0.72rem var(--sans); color: var(--ink-3); }
+/* tokens */
+.viz-tokens { display: grid; justify-items: center; gap: 0.2rem; }
+.vt-row { display: flex; justify-content: center; gap: 0.55rem; animation: vtGap 6s ease-in-out infinite; }
+.vt-cell { display: grid; justify-items: center; gap: 0.3rem; }
+.vt-chip { font: 400 0.95rem var(--mono); padding: 0.3rem 0.55rem; border-radius: 99px; border: 1px solid var(--ai); background: var(--ai-soft); color: var(--ai-ink); animation: vtChip 6s ease-in-out infinite; }
+.vt-id { font: 400 0.7rem var(--mono); color: var(--ink-3); animation: vtId 6s ease-in-out infinite; animation-delay: calc(var(--i) * 0.1s); animation-fill-mode: both; }
+@keyframes vtGap { 0%, 14% { gap: 0; } 30%, 82% { gap: 0.55rem; } 96%, 100% { gap: 0; } }
+@keyframes vtChip { 0%, 14% { border-color: transparent; background: transparent; color: var(--ink); } 30%, 82% { border-color: var(--ai); background: var(--ai-soft); color: var(--ai-ink); } 96%, 100% { border-color: transparent; background: transparent; color: var(--ink); } }
+@keyframes vtId { 0%, 30% { opacity: 0; } 46%, 82% { opacity: 1; } 96%, 100% { opacity: 0; } }
+/* embeddings, final-state bars */
+.vz-bar { fill: var(--ai); transform-box: fill-box; transform-origin: bottom; animation: vzGrow 6s ease-in-out infinite; animation-delay: var(--d); animation-fill-mode: both; }
+.vz-bar.neg { fill: var(--human); }
+.vz-bar.fin { fill: var(--both); }
+@keyframes vzGrow { 0%, 8% { transform: scaleY(0); } 28%, 80% { transform: scaleY(1); } 94%, 100% { transform: scaleY(0); } }
+/* attention */
+.vz-flow { fill: none; stroke: var(--ai); stroke-linecap: round; stroke-dasharray: 2 7; animation: vzFlow 1.2s linear infinite, vzFade 6s ease-in-out infinite; animation-delay: var(--d), var(--d); animation-fill-mode: both; }
+@keyframes vzFlow { to { stroke-dashoffset: -18; } }
+@keyframes vzFade { 0%, 4% { opacity: 0; } 16%, 84% { opacity: 1; } 96%, 100% { opacity: 0; } }
+.vz-pulse { fill: none; stroke: var(--ai); stroke-width: 2; transform-box: fill-box; transform-origin: center; animation: vzPulse 6s ease-out infinite; }
+@keyframes vzPulse { 0%, 30% { opacity: 0; transform: scale(0.6); } 50% { opacity: 0.85; transform: scale(1); } 80%, 100% { opacity: 0; transform: scale(1.3); } }
+/* mlp */
+.vz-edge { stroke: var(--ink-3); stroke-opacity: 0.16; stroke-width: 0.8; }
+.vz-node { fill: var(--ai-soft); stroke: var(--ai); stroke-width: 1.2; transform-box: fill-box; transform-origin: center; animation: vzNode 6s ease-in-out infinite; animation-delay: var(--d); animation-fill-mode: both; }
+.vz-node.mid { fill: var(--both-soft); stroke: var(--both); }
+.vz-node.out { fill: var(--human-soft); stroke: var(--human); }
+@keyframes vzNode { 0%, 4% { opacity: 0.25; transform: scale(0.8); } 10%, 22% { opacity: 1; transform: scale(1.25); } 36%, 100% { opacity: 0.4; transform: scale(0.95); } }
+/* residual stream */
+.vz-stream { fill: none; stroke: var(--ink-3); stroke-width: 2.2; stroke-linecap: round; }
+.vz-branch { fill: none; stroke: var(--ink-3); stroke-width: 1.4; stroke-dasharray: 3 3; }
+.vz-block { fill: var(--paper); stroke: var(--line); stroke-width: 1.2; }
+.vz-block.att { stroke: var(--ai); animation: vzBlkA 6s ease-in-out infinite; }
+.vz-block.mlp { stroke: var(--human); animation: vzBlkM 6s ease-in-out infinite; }
+.vz-bl { font: 600 9.5px var(--sans); letter-spacing: 0.05em; fill: var(--ink); text-anchor: middle; }
+.vz-plus { fill: var(--paper); stroke: var(--ink-3); }
+.vz-plus-t { font: 600 11px var(--sans); fill: var(--ink); text-anchor: middle; }
+.vz-bead { transform: translate(328px, 36px); animation: vzBead 6s linear infinite; }
+.vz-bead .core { fill: var(--ink); }
+.vz-bead .ring1 { fill: none; stroke: var(--ai); stroke-width: 2; animation: vzRing1 6s linear infinite; }
+.vz-bead .ring2 { fill: none; stroke: var(--human); stroke-width: 2; animation: vzRing2 6s linear infinite; }
+@keyframes vzBead { 0% { transform: translate(12px, 36px); opacity: 0; } 6% { transform: translate(12px, 36px); opacity: 1; } 90% { transform: translate(328px, 36px); opacity: 1; } 100% { transform: translate(328px, 36px); opacity: 0; } }
+@keyframes vzRing1 { 0%, 37% { opacity: 0; } 40%, 100% { opacity: 1; } }
+@keyframes vzRing2 { 0%, 68% { opacity: 0; } 71%, 100% { opacity: 1; } }
+@keyframes vzBlkA { 0%, 34% { fill: var(--paper); } 40%, 52% { fill: var(--ai-soft); } 62%, 100% { fill: var(--paper); } }
+@keyframes vzBlkM { 0%, 65% { fill: var(--paper); } 71%, 83% { fill: var(--human-soft); } 92%, 100% { fill: var(--paper); } }
+/* layers */
+.vz-row { fill: var(--paper); stroke: var(--line); stroke-width: 1; animation: vzRow 6s ease-in-out infinite; animation-delay: var(--d); animation-fill-mode: both; }
+.vz-rt { font: 500 9.5px var(--sans); fill: var(--ink-2); text-anchor: middle; }
+.vz-gauge { fill: var(--both); transform-box: fill-box; transform-origin: bottom; animation: vzGauge 6s ease-in-out infinite; animation-delay: var(--d); animation-fill-mode: both; }
+@keyframes vzRow { 0%, 3% { fill: var(--paper); stroke: var(--line); } 8%, 16% { fill: var(--ai-soft); stroke: var(--ai); } 26%, 100% { fill: var(--paper); stroke: var(--line); } }
+@keyframes vzGauge { 0%, 3% { transform: scaleY(0.08); opacity: 0.3; } 12%, 88% { transform: scaleY(var(--h)); opacity: 1; } 96%, 100% { transform: scaleY(0.08); opacity: 0.3; } }
+/* final representation */
+.vz-arrow { fill: none; stroke: var(--ink-3); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.vz-o { font: 500 11px var(--mono); fill: var(--ink); }
+.vz-obar { fill: var(--both); transform-box: fill-box; transform-origin: left; animation: vzGrowX 6s ease-out infinite; animation-delay: var(--d); animation-fill-mode: both; }
+@keyframes vzGrowX { 0%, 22% { transform: scaleX(0); } 40%, 86% { transform: scaleX(1); } 96%, 100% { transform: scaleX(0); } }
+html[data-motion='reduced'] .viz, html[data-motion='reduced'] .viz * { animation: none !important; }
 
 /* ---- screen 7 ---- */
 .machine { width: min(100%, 28rem); display: flex; flex-direction: column; align-items: center; gap: 0.6rem; }
