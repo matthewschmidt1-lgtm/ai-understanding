@@ -20,7 +20,7 @@ Open `http://localhost:4190/tests/run.html`. The title reads `PASS 26` when ever
 
 Railway with Nixpacks runs `sh scripts/serve-site.sh`, which copies the public files into `dist/` and serves them with `serve` and the headers in `serve.json`. Push to GitHub and Railway redeploys.
 
-After the first deploy, set `og:image` in `index.html` to the absolute URL of `og.png` so link previews work.
+Live at https://ai-understanding-production.up.railway.app/. `og:image` in `index.html` uses that absolute URL; update it if the domain changes.
 
 ## Where things are
 
