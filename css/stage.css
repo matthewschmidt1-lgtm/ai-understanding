@@ -11,7 +11,7 @@
 .rv.out { opacity: 0; transform: translateY(-10px); filter: blur(8px); transition-duration: 0.6s; pointer-events: none; }
 
 /* ---------- lines ---------- */
-.line { max-width: 38rem; text-wrap: balance; }
+.line { max-width: 35rem; text-wrap: balance; }
 .line.hero-word { font: 400 var(--step-hero) / 1 var(--serif); letter-spacing: -0.035em; max-width: none; }
 .line.big { font: 400 var(--step-big) / 1.08 var(--serif); letter-spacing: -0.025em; }
 .line.mid { font: 400 var(--step-mid) / 1.35 var(--serif); color: var(--ink); }
@@ -36,17 +36,15 @@
 /* ---------- buttons ---------- */
 .btn { position: relative; isolation: isolate; display: inline-flex; align-items: center; gap: 0.7rem; min-height: 52px; padding: 0.9rem 1.7rem; border-radius: 99px; border: 1px solid transparent; font: 500 1rem var(--sans); letter-spacing: 0.01em; transition: transform 0.4s var(--ease-out), background-color 0.4s, color 0.4s, box-shadow 0.4s, border-color 0.4s; }
 .btn.primary { background: var(--ink); color: var(--paper); box-shadow: 0 14px 34px -14px rgb(23 20 15 / 0.55); }
-.btn.primary::before { content: ''; position: absolute; inset: -3px; z-index: -1; border-radius: inherit; background: linear-gradient(100deg, var(--human), var(--both), var(--ai)); opacity: 0; filter: blur(14px); transition: opacity 0.5s; }
 .btn.ghost { background: var(--card); border-color: var(--line); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
 .btn-arrow { display: inline-block; transition: transform 0.4s var(--ease-out); }
 .btn:disabled { cursor: default; }
 @media (hover: hover) {
   .btn:hover { transform: translateY(-2px); }
-  .btn.primary:hover::before { opacity: 0.55; }
+  .btn.primary:hover { box-shadow: 0 0 0 2px var(--paper), 0 0 0 4px var(--both), 0 14px 34px -14px rgb(23 20 15 / 0.55); transform: translateY(-1px); }
   .btn.ghost:hover { border-color: var(--ink-3); }
   .btn:hover .btn-arrow { transform: translateX(4px); }
 }
-.btn.primary:focus-visible::before { opacity: 0.55; }
 
 /* ---------- choices ---------- */
 .choices { display: grid; gap: 1rem; width: 100%; margin-top: 0.6rem; }

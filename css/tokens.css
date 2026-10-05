@@ -35,6 +35,9 @@
   --step-quiet: clamp(1.05rem, 2.1vw, 1.3rem);
   --gutter: clamp(1.25rem, 5vw, 3rem);
 
+  --umber: #3a2e22;
+  --r-lg: 22px;
+  --r-md: 14px;
   --ease-out: cubic-bezier(0.2, 0.7, 0.1, 1);
   --ease-io: cubic-bezier(0.65, 0, 0.35, 1);
 

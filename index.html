@@ -67,8 +67,9 @@
 
   <footer class="chrome-foot">
     <button class="restart" id="restart" type="button">Start over</button>
-    <span class="speed" aria-hidden="true">Tap empty space or press space to go faster</span>
+    <span class="speed" id="speed" aria-hidden="true"><span class="touch">Tap empty space to skip</span><span class="keys">Space to skip</span></span>
   </footer>
+  <button class="more" id="more" type="button" aria-label="Scroll down for more" hidden><span aria-hidden="true">↓</span></button>
   <div id="sr-live" class="sr-only" aria-live="polite" aria-atomic="true"></div>
 
   <noscript><p class="noscript">This is an interactive story about how AI language models work, and it needs JavaScript. The short version: a model turns words into numbers, transforms those numbers through many layers of attention and arithmetic, and predicts the next word. Whether that amounts to understanding is still an open question.</p></noscript>

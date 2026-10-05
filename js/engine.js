@@ -32,17 +32,34 @@ export function keyboardMode() {
 const liveRegion = () => document.getElementById('sr-live');
 
 // New content below the fold scrolls gently into view; nothing above it moves.
-// A screen can pin its main figure: scrolling for new content never pushes the pinned figure under the header.
+// Keeping new content in view. Every screen has a "pinned" figure (its first element unless the screen
+// chooses another, or false once it lets go): scrolling for new text never pushes the pinned figure under
+// the header. Buttons and choices ignore the pin, because a next step must never be out of reach.
 let pinned = null;
 let skipAll = () => {};
 export const skipPause = () => skipAll();
-function keepInView(el) {
+
+const HEADER = 84;
+const FOOTER = 70;
+function scrollNeeded(el, ignorePin) {
+  const r = el.getBoundingClientRect();
+  if (r.bottom <= window.innerHeight - FOOTER) return 0;
+  let delta = r.bottom - window.innerHeight + FOOTER + 40;
+  if (!ignorePin && pinned && pinned.isConnected && pinned !== el) delta = Math.min(delta, pinned.getBoundingClientRect().top - HEADER);
+  return delta > 4 ? delta : 0;
+}
+function keepInView(el, ignorePin = false) {
   requestAnimationFrame(() => {
-    const r = el.getBoundingClientRect();
-    if (r.bottom <= window.innerHeight - 24) return;
-    let delta = r.bottom - window.innerHeight + 96;
-    if (pinned && pinned.isConnected && pinned !== el) delta = Math.min(delta, pinned.getBoundingClientRect().top - 84);
-    if (delta > 4) window.scrollBy({ top: delta, behavior: motion.reduced ? 'auto' : 'smooth' });
+    const delta = scrollNeeded(el, ignorePin);
+    if (!delta) return;
+    window.scrollBy({ top: delta, behavior: motion.reduced ? 'auto' : 'smooth' });
+    // Smooth scrolling can be interrupted or throttled, so check again and finish the job.
+    if (!motion.reduced) {
+      setTimeout(() => {
+        const again = scrollNeeded(el, ignorePin);
+        if (again) window.scrollBy({ top: again, behavior: 'auto' });
+      }, 1000);
+    }
   });
 }
 
@@ -84,12 +101,15 @@ export function createContext({ root, col, signal }) {
   const reveal = (el) => requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('in')));
 
   // Put an element on stage with the signature fade-and-focus entrance.
-  async function add(el, { hold = 0, parent = col } = {}) {
+  async function add(el, { hold = 0, parent = col, ignorePin = false } = {}) {
     if (signal.aborted) throw new Aborted();
     el.classList.add('rv');
     parent.append(el);
+    if (pinned === null || (pinned && !pinned.isConnected)) {
+      if (parent === col && !ignorePin) pinned = el; // the first thing on a screen is its anchor
+    }
     reveal(el);
-    keepInView(el);
+    keepInView(el, ignorePin);
     if (hold) await wait(hold);
     return el;
   }
@@ -123,7 +143,7 @@ export function createContext({ root, col, signal }) {
         resolve();
       }, { once: true }),
     );
-    add(b, { parent });
+    add(b, { parent, ignorePin: true });
     focusSoon(b);
     return guard(clicked);
   }
@@ -158,7 +178,7 @@ export function createContext({ root, col, signal }) {
         wrap.append(b);
       });
     });
-    add(wrap);
+    add(wrap, { ignorePin: true });
     focusSoon(wrap.querySelector('button'));
     return guard(picked);
   }
@@ -200,8 +220,9 @@ export function createContext({ root, col, signal }) {
     loop,
     on,
     guard,
+    // pin(el) anchors a figure; pin(null) lets go so later text can scroll freely.
     pin(el) {
-      pinned = el;
+      pinned = el || false;
     },
     learn: (id) => learnConcept(id),
     live(text) {

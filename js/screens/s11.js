@@ -41,7 +41,7 @@ export default async function run(ctx) {
   await ctx.say('Maybe the interesting question isn’t whether AI thinks like us.', { cls: 'mid', hold: 3000 });
   await ctx.say('Maybe it’s how something so different can produce behavior that looks so familiar.', { cls: 'mid', hold: 7000 });
 
-  await ctx.clear();
+  await ctx.clear({ keep: [fig] });
   await ctx.say('One last thing. In your own words, complete this sentence.', { cls: 'mid', hold: 500 });
   const c = completion();
   await ctx.add(c.form, { hold: 400 });
@@ -55,7 +55,7 @@ export default async function run(ctx) {
       c.form.querySelector('#skip').addEventListener('click', () => resolve(null));
     }),
   );
-  await ctx.clear();
+  await ctx.clear({ keep: [fig] });
 
   if (mine && (mine.a || mine.b)) {
     ctx.state.set('sentence', mine);

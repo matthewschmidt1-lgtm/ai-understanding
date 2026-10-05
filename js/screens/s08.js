@@ -95,7 +95,7 @@ export default async function run(ctx) {
   await ctx.say('Try it. Here are the model’s scores for what follows “The capital of France is.” Draw from them yourself.', { cls: 'mid', hold: 400 });
   const play = chart();
   const tally = new Map();
-  const tallyEl = h('p', { class: 'tally', 'aria-live': 'polite' }, 'Nothing drawn yet.');
+  const tallyEl = h('div', { class: 'tally', 'aria-live': 'polite' }, h('span', { class: 'tally-empty' }, 'Nothing drawn yet.'));
   const slider = h('input', { type: 'range', min: 0.2, max: 2.5, step: 0.1, value: 1, id: 'temp', 'aria-describedby': 'temp-note' });
   const tempVal = h('output', { for: 'temp' }, '1.0');
   const draw = h('button', { class: 'btn ghost', type: 'button' }, h('span', { class: 'btn-label' }, 'Draw a token'));
@@ -108,7 +108,7 @@ export default async function run(ctx) {
     const t = sample(distribution(NEXT_FRANCE, Number(slider.value)));
     tally.set(t, (tally.get(t) || 0) + 1);
     const total = [...tally.values()].reduce((a, b) => a + b, 0);
-    tallyEl.textContent = `${total} drawn: ` + [...tally.entries()].sort((a, b) => b[1] - a[1]).map(([k, v]) => `${k} ×${v}`).join(' · ');
+    tallyEl.replaceChildren(h('span', { class: 'tally-n' }, `${total} drawn`), ...[...tally.entries()].sort((a, b) => b[1] - a[1]).map(([k, v]) => h('span', { class: 'chip tally-chip' }, k, h('b', {}, `×${v}`))));
   });
   const controls = h('div', { class: 'ctl' }, h('label', { for: 'temp' }, 'Randomness'), slider, tempVal, draw);
   await ctx.add(play.el, { hold: 200 });

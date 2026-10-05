@@ -7,6 +7,11 @@ import { createLearner } from '../model.js';
 export const meta = { title: 'How AI learns' };
 
 const SHOWN = ['the', 'dog', 'cat', 'wolf', 'car', 'truck', 'chased', 'ate', 'slept', 'drove', 'stopped', 'fast'];
+const GROUPS = [
+  ['animal', ['dog', 'cat', 'wolf']],
+  ['vehicle', ['car', 'truck']],
+  ['action', ['ate', 'slept', 'drove', 'stopped', 'fast', 'chased']],
+];
 const nice = (t) => (t === '.' ? '(end)' : t);
 const pctText = (p) => (p < 0.005 ? '<1%' : `${Math.round(p * 100)}%`);
 
@@ -52,25 +57,31 @@ export default async function run(ctx) {
       x: 50 + squash((raw[i][0] - cx) * scale, 41),
       y: 50 + squash((raw[i][1] - cy) * scale * 0.8, 38),
     }));
-    // Words that land on (nearly) the same spot are the point of this page, so fan out their labels.
+    // Words that land on (nearly) the same spot are the point of this page, so give every label its own
+    // room: try below, above, right, left, then further out, and avoid other labels and other dots.
+    const dots = placed.map((p) => ({ x: (p.x / 100) * W, y: (p.y / 100) * H }));
     const rects = [];
-    placed.sort((a, b) => a.y - b.y || a.x - b.x).forEach((p) => {
+    placed.slice().sort((a, b) => a.y - b.y || a.x - b.x).forEach((p) => {
       const px = (p.x / 100) * W;
       const py = (p.y / 100) * H;
-      const width = p.w.length * 8.6 + 8;
-      let shift = 0;
-      for (let tries = 0; tries < 8; tries++) {
-        const top = py + 8 + shift;
-        const clash = rects.some((r) => Math.abs(r.x - px) < (r.w + width) / 2 && Math.abs(r.y - top) < 17);
-        if (!clash) {
-          rects.push({ x: px, y: top, w: width });
+      const w = p.w.length * 8.6 + 10;
+      const spots = [[0, 0], [0, -34], [w / 2 + 12, -17], [-(w / 2 + 12), -17], [0, 17], [0, -51], [w / 2 + 12, 4], [-(w / 2 + 12), 4], [0, 34]];
+      let best = spots[0];
+      for (const [dx, dy] of spots) {
+        const cx = px + dx;
+        const top = py + 8 + dy;
+        const hitsLabel = rects.some((r) => Math.abs(r.x - cx) < (r.w + w) / 2 && Math.abs(r.y - top) < 17);
+        const hitsDot = dots.some((d) => d.x > cx - w / 2 - 6 && d.x < cx + w / 2 + 6 && d.y > top - 6 && d.y < top + 23 && !(Math.abs(d.x - px) < 1 && Math.abs(d.y - py) < 1));
+        if (!hitsLabel && !hitsDot) {
+          best = [dx, dy];
           break;
         }
-        shift += 17;
+        best = [dx, dy];
       }
+      rects.push({ x: px + best[0], y: py + 8 + best[1], w });
       ui.pts[p.w].style.left = `${p.x}%`;
       ui.pts[p.w].style.top = `${p.y}%`;
-      ui.pts[p.w].querySelector('.lab').style.translate = `0 ${shift}px`;
+      ui.pts[p.w].querySelector('.lab').style.translate = `${best[0]}px ${best[1]}px`;
     });
   }
 
@@ -108,11 +119,14 @@ export default async function run(ctx) {
   // ----- the story -----
   await ctx.say('Earlier, we placed the words by hand.', { cls: 'quiet', hold: 1500 });
   await ctx.say('So who places them in a real model?', { cls: 'big', hold: 2200 });
-  await ctx.say('Here is a model on day one. Every word sits wherever its starting numbers happen to put it.', { cls: 'mid', hold: 800 });
+  await ctx.say('Here is a model on day one. Every word sits wherever its starting numbers happen to put it.', { cls: 'mid', hold: 2600 });
+  await ctx.clear({ ms: 450 });
+  const caption = await ctx.say('Day one: a model nobody has taught anything yet.', { cls: 'quiet', hold: 300 });
   layout(true);
   showGuess();
   showMiss();
   await ctx.add(ui.field, { hold: 600 });
+  layout(true);
   ctx.pin(ui.field);
   await ctx.add(ui.panel, { hold: 400 });
   ctx.learn('learning');
@@ -126,15 +140,19 @@ export default async function run(ctx) {
   });
 
   // One sentence: a visible nudge.
-  await ctx.button('Feed it one sentence', { variant: 'ghost' });
+  await ctx.button('Feed it one sentence');
   const first = L.read();
-  const readLine = await ctx.say(`It was fed: “${first.text.replace(' .', '.')}”`, { cls: 'mid', hold: 600 });
+  const keep = [caption, ui.field, ui.panel]; // the map and its panels stay; the words under them take turns
+  await ctx.clear({ keep, ms: 350 });
+  await ctx.say(`It was fed: “${first.text.replace(' .', '.')}”`, { cls: 'mid', hold: 600 });
   ui.field.classList.remove('live');
   refresh();
   L.record();
   showMiss();
-  await ctx.wait(1600);
-  await ctx.say('Its scores were off, so every weight moved a tiny bit toward better scores. That nudge is what “learning” means here.', { cls: 'mid', hold: 2200 });
+  await ctx.wait(1800);
+  await ctx.clear({ keep, ms: 350 });
+  await ctx.say('Its scores were off, so every weight moved a tiny bit toward better scores. That nudge is what “learning” means here.', { cls: 'mid', hold: 3600 });
+  await ctx.clear({ keep, ms: 350 });
   await ctx.say('One sentence barely changes anything. Feed it a few hundred.', { cls: 'quiet', hold: 500 });
   await ctx.button('Feed it 200 sentences');
 
@@ -167,11 +185,17 @@ export default async function run(ctx) {
   ui.field.classList.remove('live');
   ui.field.classList.add('pickable');
   await ctx.wait(1000);
-  await ctx.clear({ keep: [ui.field, ui.panel], ms: 400 });
+  caption.textContent = 'After 200 sentences.';
+  await ctx.clear({ keep: [caption, ui.field, ui.panel], ms: 400 });
+  // Our own labels, added after the fact: the model only ever had positions.
+  GROUPS.forEach(([name, words]) => words.forEach((w) => ui.pts[w].setAttribute('data-g', name)));
+  ui.field.classList.add('tinted');
+  await ctx.add(h('p', { class: 'legend' }, h('span', { class: 'a' }, h('i'), 'animals'), h('span', { class: 'v' }, h('i'), 'vehicles'), h('span', { class: 'x' }, h('i'), 'actions'), h('span', { class: 'sr-only' }, ' (colors are our labels, not the model’s)')), { hold: 600 });
 
   await ctx.say('Look at the neighborhoods.', { cls: 'big', hold: 1600 });
-  await ctx.say('Nobody told the model that dogs and cats are alike, or that cars are different. They ended up close because they turn up in the same places in the text.', { cls: 'mid', hold: 800 });
-  await ctx.say('Tap any word to see which words the model now scores highest after it.', { cls: 'quiet', hold: 600 });
+  await ctx.say('Nobody told the model that dogs and cats are alike, or that cars are different. They ended up close because they turn up in the same places in the text. (The colors are ours, added afterward. The model only ever had positions.)', { cls: 'mid', hold: 800 });
+  await ctx.say('Tap any word to see which words the model now scores highest after it.', { cls: 'quiet', hold: 5200 });
+  await ctx.clear({ keep: [caption, ui.field, ui.panel, ui.field.parentNode.querySelector('.legend')], ms: 350 });
   await ctx.say('The miss never reaches zero, and it shouldn’t: after “dog,” the text really does vary. It might say chased, ate or slept.', { cls: 'caption', hold: 400 });
   await ctx.say(`Simplified: this model has ${L.weightCount} weights, is fed 13 short sentences, and looks only one word back. Real models weigh the whole context, use thousands of dimensions and learn from vastly more text. The nudging rule, gradient descent, is the same idea.`, { cls: 'caption', hold: 800 });
   await ctx.say('If a few hundred nudges can sort words into neighborhoods, what could billions of weights and an enormous amount of text build?', { cls: 'mid', hold: 600 });

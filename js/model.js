@@ -96,7 +96,7 @@ export function glowColor(facets) {
   let wsum = 0;
   const acc = [0, 0, 0];
   for (const f of FACETS) {
-    const w = (facets[f.id] ?? 0) ** 3;
+    const w = (facets[f.id] ?? 0) ** 6;
     wsum += w;
     for (let i = 0; i < 3; i++) acc[i] += f.rgb[i] * w;
   }

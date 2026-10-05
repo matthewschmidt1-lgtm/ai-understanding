@@ -87,10 +87,11 @@ export default async function run(ctx) {
       setTimeout(resolve, 45000 * motion.k);
     }),
   );
-  await ctx.button('Continue', { variant: 'ghost' });
+  await ctx.button('Continue');
+  ctx.pin(null); // from here the closing lines, not the box, are what the visitor needs to see
   await ctx.clear({ keep: [box] });
   await ctx.say('There isn’t a little person inside the AI reading the sentence.', { cls: 'mid', hold: 2300 });
   await ctx.say('There is a huge sequence of numerical transformations.', { cls: 'big', hold: 1800 });
-  await ctx.say('Simplified: this is the shape of a decoder-only Transformer, not a literal wiring diagram.', { cls: 'caption', hold: 500 });
+  await ctx.say('Simplified: this is the shape of a decoder‑only Transformer, not a literal wiring diagram.', { cls: 'caption', hold: 500 });
   await ctx.button('Run the machine');
 }

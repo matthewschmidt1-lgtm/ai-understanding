@@ -45,7 +45,8 @@ These are the shared sizes. Changing one changes it on every page that uses it. 
 |---|---|
 | "DOES AI UNDERSTAND?" top left | 0.72rem capitals |
 | "What you now know" button, top right | 0.78rem |
-| "Tap empty space or press space…" hint, bottom right | 0.7rem |
+| "Space to skip" / "Tap empty space to skip" hint, bottom right (fades after first use) | 0.75rem |
+| Down-arrow "more below" button, bottom right | 1.2rem |
 | "Start over", bottom left | 0.78rem |
 | Open "What you now know" list | 1rem |
 | Primary and secondary buttons everywhere | 1rem |

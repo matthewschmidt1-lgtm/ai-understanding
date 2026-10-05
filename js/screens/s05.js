@@ -50,7 +50,7 @@ export default async function run(ctx) {
       t.classList.toggle('src', self);
       t.classList.toggle('lit', !self && w > 0.03);
       t.setAttribute('aria-pressed', String(self));
-      t.style.setProperty('--w', w);
+      t.style.setProperty('--w', w >= 0.015 ? w : 0);
       t.querySelector('.tok-pct').textContent = w > 0.015 ? `${Math.round(w * 100)}%` : '';
       if (self || w < 0.03) return;
       const to = anchor(t.querySelector('.tok-w'), box);

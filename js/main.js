@@ -103,6 +103,7 @@ window.addEventListener('pointermove', (e) => {
     s.setProperty('--my', `${e.clientY}px`);
   });
 });
+const speedHint = document.getElementById('speed');
 window.addEventListener('keydown', (e) => {
   if (e.key === 'Tab') document.documentElement.dataset.input = 'keyboard';
   // One shortcut for impatient readers: space or the right arrow cuts the current pause short.
@@ -110,12 +111,16 @@ window.addEventListener('keydown', (e) => {
   if ((e.key === ' ' || e.key === 'ArrowRight') && free && document.body.dataset.screen !== '0') {
     e.preventDefault();
     skipPause();
+    speedHint.classList.add('gone');
   }
 });
 // Tapping empty space or the story text does the same.
 stage.addEventListener('pointerup', (e) => {
   if (document.body.dataset.screen === '0') return;
-  if (e.target === stage || e.target.classList.contains('screen') || e.target.classList.contains('col') || e.target.classList.contains('line')) skipPause();
+  if (e.target === stage || e.target.classList.contains('screen') || e.target.classList.contains('col') || e.target.classList.contains('line')) {
+    skipPause();
+    speedHint.classList.add('gone');
+  }
 });
 
 window.addEventListener('popstate', () => {
@@ -131,6 +136,17 @@ document.getElementById('brand').addEventListener('click', (e) => {
   e.preventDefault();
   restart();
 });
+
+// The "more below" cue.
+const more = document.getElementById('more');
+function checkMore() {
+  const left = document.documentElement.scrollHeight - window.innerHeight - window.scrollY;
+  more.hidden = document.body.dataset.screen === '0' || left < 120;
+}
+window.addEventListener('scroll', checkMore, { passive: true });
+window.addEventListener('resize', checkMore);
+new ResizeObserver(checkMore).observe(stage);
+more.addEventListener('click', () => window.scrollBy({ top: window.innerHeight * 0.7, behavior: motion.reduced ? 'auto' : 'smooth' }));
 
 initKnowledge();
 go(screenFromHash(), { push: false, initial: true });
