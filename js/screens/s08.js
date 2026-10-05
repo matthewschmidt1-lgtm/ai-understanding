@@ -60,7 +60,7 @@ export default async function run(ctx) {
   await ctx.wait(2400);
 
   await ctx.say('The model doesn’t hand back one fixed answer.', { cls: 'mid', hold: 2000 });
-  await ctx.say('It produces a probability distribution over possible next tokens.', { cls: 'mid', hold: 2400 });
+  await ctx.say('It produces a probability distribution over possible next tokens.', { cls: 'mid', hold: 3400 });
 
   // Paris is chosen and folds into the sentence.
   c.el.classList.add('chosen');
@@ -92,7 +92,7 @@ export default async function run(ctx) {
 
   // Play: same scores, different draws.
   await ctx.clear();
-  await ctx.say('Try it. The model has scored “The capital of France is”. Draw from those scores yourself.', { cls: 'mid', hold: 400 });
+  await ctx.say('Try it. Here are the model’s scores for what follows “The capital of France is.” Draw from them yourself.', { cls: 'mid', hold: 400 });
   const play = chart();
   const tally = new Map();
   const tallyEl = h('p', { class: 'tally', 'aria-live': 'polite' }, 'Nothing drawn yet.');
@@ -115,7 +115,7 @@ export default async function run(ctx) {
   redraw();
   await ctx.add(controls, { hold: 300 });
   await ctx.add(tallyEl, { hold: 200 });
-  await ctx.say('The model’s raw scores stay the same. The dial reshapes them into probabilities before one is drawn: low randomness makes the top token almost certain, high randomness lets unlikely ones through.', { id: 'temp-note', cls: 'caption', hold: 400 });
+  await ctx.say('The model’s raw scores stay the same. The dial reshapes them into probabilities before one is drawn: low randomness makes the top token almost certain; high randomness lets unlikely ones through.', { id: 'temp-note', cls: 'caption', hold: 400 });
   await ctx.say('Simplified: the probabilities are illustrative, and real models split text into tokens differently from whole words.', { cls: 'caption', hold: 500 });
   await ctx.button('Next');
 }

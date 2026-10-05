@@ -15,7 +15,7 @@ export default async function run(ctx) {
   await ctx.clear();
   await ctx.say('Reasonable.', { cls: 'big', hold: 1600 });
   const mirror = {
-    yes: 'Then the question becomes what, exactly, the model has that counts.',
+    yes: 'Then the question becomes what, exactly, the model has that deserves the word.',
     no: 'Then the question becomes what, exactly, is missing.',
     unsure: 'That is an honest place to stand.',
   };

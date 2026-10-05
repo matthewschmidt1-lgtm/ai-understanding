@@ -78,7 +78,7 @@ export default async function run(ctx) {
 
   await ctx.add(ui.wrap, { hold: 1000 });
   ctx.pin(ui.wrap);
-  const hint = await ctx.say('Hover over “it”. On a touch screen, tap it.', { cls: 'quiet', hold: 0 });
+  const hint = await ctx.say('Hover over “it.” On a touch screen, tap it.', { cls: 'quiet', hold: 0 });
   ctx.learn('attention');
 
   // Pointer, focus and tap all select a word; the first time it is "it" the story continues.
@@ -131,7 +131,7 @@ export default async function run(ctx) {
   await ctx.add(heads, { hold: 200 });
   await ctx.add(note, { hold: 1600 });
 
-  await ctx.say('Described mechanically, it’s computing relationships within the context. Whether that counts as “thinking about” the sentence is the question we’ll end on.', { cls: 'mid', hold: 2200 });
+  await ctx.say('Described mechanically, it’s computing relationships within the context. Whether that counts as “thinking about” the sentence is a question we’ll come back to.', { cls: 'mid', hold: 2200 });
   await ctx.say('Simplified: these patterns are hand-written. Real models learn many patterns at once, and each word can only look backward. Each word’s percentages add up to 100%, and the share on the word itself is shown too.', { cls: 'caption', hold: 500 });
   await ctx.say('If every word can draw on the words before it, what could happen when you stack dozens of these layers?', { cls: 'mid', hold: 600 });
   await ctx.button('Look inside');

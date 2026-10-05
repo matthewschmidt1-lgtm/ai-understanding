@@ -80,7 +80,7 @@ export default async function run(ctx) {
   for (const c of DOG_CONTEXTS) {
     current = c;
     setContext(ui, current);
-    await ctx.wait(3600);
+    await ctx.wait(5000);
   }
   ui.arcs.replaceChildren();
   await ctx.say('The word didn’t change.', { cls: 'mid', hold: 1500 });

@@ -50,7 +50,7 @@ function attention() {
   });
   kids.push(h('circle', { class: 'vz-pulse', cx: xs[to], cy: 106, r: 17 }));
   xs.forEach((x, i) => kids.push(tx(x, 110, WORDS[i], i === to ? 'vz-w hot' : 'vz-w')));
-  return svg('Information flows from the earlier words, mostly “chased” and “dog”, into the word “ball”.', ...kids);
+  return svg('Information flows from the earlier words, mostly “chased” and “dog”, into the word “ball.”', ...kids);
 }
 
 // MLP: widen, mix, narrow back down.
@@ -122,7 +122,7 @@ export const VIZ = { tokens, embeddings, attention, mlp, residual, layers, final
 export const WATCH = {
   tokens: 'Watch the sentence get cut into pieces, each with an ID number.',
   embeddings: 'Watch each piece turn into its own column of numbers.',
-  attention: 'Watch information flow from earlier words into “ball”. Thicker means more.',
+  attention: 'Watch information flow from earlier words into “ball.” Thicker means more.',
   mlp: 'Watch one token’s list of numbers widen, mix, and come out changed. Every token gets this treatment separately.',
   residual: 'Watch the running state pick up something at each block.',
   layers: 'Watch a similar pair of steps repeat, each layer with its own learned numbers, the state growing richer each time.',

@@ -24,7 +24,7 @@ function build() {
   // Miss panel: how wrong the guesses are, over time.
   const sparkPath = h('path', { class: 'sp-line', d: '' });
   const missNow = h('strong', {}, '');
-  const spark = h('div', { class: 'lp-card' }, h('p', { class: 'lp-title' }, 'How wrong its guesses are'), h('svg', { class: 'spark', viewBox: '0 0 200 60', preserveAspectRatio: 'none', 'aria-hidden': 'true' }, h('path', { class: 'sp-base', d: 'M0 59 H200' }), sparkPath), h('p', { class: 'sp-read' }, 'Average miss: ', missNow, h('span', { class: 'sr-only' }, ' (lower is better)')), h('p', { class: 'sp-read sp-sentences' }, ''));
+  const spark = h('div', { class: 'lp-card' }, h('p', { class: 'lp-title' }, 'How far off its scores are'), h('svg', { class: 'spark', viewBox: '0 0 200 60', preserveAspectRatio: 'none', 'aria-hidden': 'true' }, h('path', { class: 'sp-base', d: 'M0 59 H200' }), sparkPath), h('p', { class: 'sp-read' }, 'Average miss: ', missNow, h('span', { class: 'sr-only' }, ' (lower is better)')), h('p', { class: 'sp-read sp-sentences' }, ''));
   const panel = h('div', { class: 'lp' }, guess, spark);
   return { field, pts, panel, guessTitle, guessRows, guess, sparkPath, missNow, sentencesRead: spark.querySelector('.sp-sentences') };
 }
@@ -79,7 +79,7 @@ export default async function run(ctx) {
     const top = dist.slice(0, 5);
     const rest = 1 - top.reduce((s, d) => s + d.p, 0);
     const rows = [...top, { token: 'all others', p: rest, other: true }];
-    ui.guessTitle.textContent = `After “${selected}”, it guesses:`;
+    ui.guessTitle.textContent = `After “${selected},” its scores:`;
     ui.guessRows.forEach((r, i) => {
       r.name.textContent = nice(rows[i].token);
       r.name.classList.toggle('other', !!rows[i].other);
@@ -96,7 +96,7 @@ export default async function run(ctx) {
     const top = hst[0][1];
     ui.sparkPath.setAttribute('d', hst.map(([n, v], i) => `${i ? 'L' : 'M'}${(n / maxReads) * 200} ${59 - (v / top) * 52}`).join(' '));
     ui.missNow.textContent = L.meanLoss().toFixed(2);
-    ui.sentencesRead.textContent = `${L.reads} sentence${L.reads === 1 ? '' : 's'} read`;
+    ui.sentencesRead.textContent = `${L.reads} sentence${L.reads === 1 ? '' : 's'} fed to it`;
   }
 
   const refresh = () => {
@@ -106,7 +106,7 @@ export default async function run(ctx) {
   };
 
   // ----- the story -----
-  await ctx.say('On screen 3, we placed the words by hand.', { cls: 'quiet', hold: 1500 });
+  await ctx.say('Earlier, we placed the words by hand.', { cls: 'quiet', hold: 1500 });
   await ctx.say('So who places them in a real model?', { cls: 'big', hold: 2200 });
   await ctx.say('Here is a model on day one. Every word sits wherever its starting numbers happen to put it.', { cls: 'mid', hold: 800 });
   layout(true);
@@ -116,7 +116,7 @@ export default async function run(ctx) {
   ctx.pin(ui.field);
   await ctx.add(ui.panel, { hold: 400 });
   ctx.learn('learning');
-  await ctx.say(`${L.weightCount} numbers (weights) decide all of it. Its only job: read a sentence, guess the next word.`, { cls: 'quiet', hold: 1200 });
+  await ctx.say(`${L.weightCount} numbers (weights) decide all of it. Its only task: score every possible next word.`, { cls: 'quiet', hold: 1200 });
 
   ui.field.addEventListener('click', (e) => {
     const p = e.target.closest('.pt');
@@ -126,17 +126,17 @@ export default async function run(ctx) {
   });
 
   // One sentence: a visible nudge.
-  await ctx.button('Let it read one sentence', { variant: 'ghost' });
+  await ctx.button('Feed it one sentence', { variant: 'ghost' });
   const first = L.read();
-  const readLine = await ctx.say(`It read: “${first.text}”`, { cls: 'mid', hold: 600 });
+  const readLine = await ctx.say(`It was fed: “${first.text.replace(' .', '.')}”`, { cls: 'mid', hold: 600 });
   ui.field.classList.remove('live');
   refresh();
   L.record();
   showMiss();
   await ctx.wait(1600);
-  await ctx.say('It guessed badly, so every weight moved a tiny bit toward a better guess. That nudge is learning.', { cls: 'mid', hold: 2200 });
-  await ctx.say('One sentence barely changes anything. Let it read a few hundred.', { cls: 'quiet', hold: 500 });
-  await ctx.button('Read 200 sentences');
+  await ctx.say('Its scores were off, so every weight moved a tiny bit toward better scores. That nudge is what “learning” means here.', { cls: 'mid', hold: 2200 });
+  await ctx.say('One sentence barely changes anything. Feed it a few hundred.', { cls: 'quiet', hold: 500 });
+  await ctx.button('Feed it 200 sentences');
 
   // Many sentences: the map organizes itself while we watch.
   ui.field.classList.add('live');
@@ -170,10 +170,10 @@ export default async function run(ctx) {
   await ctx.clear({ keep: [ui.field, ui.panel], ms: 400 });
 
   await ctx.say('Look at the neighborhoods.', { cls: 'big', hold: 1600 });
-  await ctx.say('Nobody told it that dogs and cats are alike, or that cars are different. They ended up close because they turn up in the same places in the text.', { cls: 'mid', hold: 800 });
-  await ctx.say('Tap any word to see what the model now expects after it.', { cls: 'quiet', hold: 600 });
-  await ctx.say('The miss never reaches zero, and it shouldn’t: after “dog” the text really does vary. It might say chased, ate or slept.', { cls: 'caption', hold: 400 });
-  await ctx.say(`Simplified: this model has ${L.weightCount} weights, reads 13 short sentences, and looks only one word back. Real models weigh the whole context, use thousands of dimensions and learn from vastly more text. The nudging rule, gradient descent, is the same idea.`, { cls: 'caption', hold: 800 });
+  await ctx.say('Nobody told the model that dogs and cats are alike, or that cars are different. They ended up close because they turn up in the same places in the text.', { cls: 'mid', hold: 800 });
+  await ctx.say('Tap any word to see which words the model now scores highest after it.', { cls: 'quiet', hold: 600 });
+  await ctx.say('The miss never reaches zero, and it shouldn’t: after “dog,” the text really does vary. It might say chased, ate or slept.', { cls: 'caption', hold: 400 });
+  await ctx.say(`Simplified: this model has ${L.weightCount} weights, is fed 13 short sentences, and looks only one word back. Real models weigh the whole context, use thousands of dimensions and learn from vastly more text. The nudging rule, gradient descent, is the same idea.`, { cls: 'caption', hold: 800 });
   await ctx.say('If a few hundred nudges can sort words into neighborhoods, what could billions of weights and an enormous amount of text build?', { cls: 'mid', hold: 600 });
   await ctx.button('Back to the chapters');
   location.hash = '#/12';

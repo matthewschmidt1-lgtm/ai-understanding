@@ -40,7 +40,7 @@ export default async function run(ctx) {
 
   // A few seconds of intentional silence: a slow breathing ring.
   const ring = h('div', { class: 'breath', 'aria-hidden': 'true' });
-  await ctx.add(ring, { hold: 4600 });
+  await ctx.add(ring, { hold: 6800 });
   await ctx.clear();
 
   await ctx.say('What came to mind first?', { cls: 'mid', hold: 700 });

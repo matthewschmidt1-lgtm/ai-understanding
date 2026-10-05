@@ -55,6 +55,6 @@ export default async function run(ctx) {
   await ctx.say('The model has transformed the input into a new internal state.', { cls: 'mid', hold: 2400 });
   await ctx.say('And now:', { cls: 'quiet', hold: 700 });
   await ctx.say('So what does it do with that state?', { cls: 'big', hold: 800 });
-  await ctx.say('Simplified: a real model has dozens of layers (this one pretends to have 32) and the final state is thousands of numbers.', { cls: 'caption', hold: 500 });
+  await ctx.say('Simplified: a real model has dozens of layers (this one shows 32) and the final state is thousands of numbers.', { cls: 'caption', hold: 500 });
   await ctx.button('Next');
 }
