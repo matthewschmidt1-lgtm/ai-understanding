@@ -19,11 +19,12 @@ const LOADERS = [
   () => import('./screens/s11.js'),
   () => import('./screens/s12.js'),
   () => import('./screens/s13.js'),
+  () => import('./screens/s14.js'),
 ];
 const LAST = LOADERS.length - 1;
 
 // How far human (clay) and machine (slate) have blended by each screen.
-const MIX = [0, 0.04, 0.1, 0.18, 0.28, 0.38, 0.48, 0.58, 0.68, 0.76, 0.84, 1, 1, 1];
+const MIX = [0, 0.04, 0.1, 0.18, 0.28, 0.38, 0.48, 0.58, 0.68, 0.76, 0.84, 1, 1, 1, 1];
 
 const stage = document.getElementById('stage');
 let token = 0;

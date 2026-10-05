@@ -13,7 +13,7 @@
   <h1>Does AI Understand? Tests</h1>
   <pre id="out"></pre>
   <script type="module">
-    import { createLearner, LEARN_VOCAB, softmax, distribution, sample, mulberry32, embeddingFor, LATENT, similarity, nearest, SENTENCE, attentionFrom, glowColor, DOG_CONTEXTS, FACETS, NEXT_FRANCE, NEXT_AFTER_PARIS } from '../js/model.js';
+    import { xorNet, xorTarget, work, WORK_PROBLEMS, trueAnswer, createLearner, LEARN_VOCAB, softmax, distribution, sample, mulberry32, embeddingFor, LATENT, similarity, nearest, SENTENCE, attentionFrom, glowColor, DOG_CONTEXTS, FACETS, NEXT_FRANCE, NEXT_AFTER_PARIS } from '../js/model.js';
     import { ITEMS } from '../js/knowledge.js';
 
     const out = document.getElementById('out');
@@ -148,8 +148,42 @@
       }
     });
 
+    // ---- reasoning ----
+    t('frozen network computes XOR on all four inputs', () => {
+      for (const [a, b] of [[0, 0], [0, 1], [1, 0], [1, 1]]) eq(xorNet(a, b).out, xorTarget(a, b), `${a},${b}`);
+    });
+    t('without the middle step the same inputs go wrong', () => {
+      const wrong = [[0, 0], [0, 1], [1, 0], [1, 1]].filter(([a, b]) => xorNet(a, b, { middle: false }).out !== xorTarget(a, b));
+      if (!wrong.length) throw new Error('single unit should fail somewhere');
+    });
+    t('no single unit on a weight grid can compute XOR (so depth is doing real work)', () => {
+      const vals = []; for (let v = -3; v <= 3.001; v += 0.5) vals.push(v);
+      const cases = [[0, 0], [0, 1], [1, 0], [1, 1]];
+      for (const w1 of vals) for (const w2 of vals) for (const b of vals) {
+        if (cases.every(([x, y]) => (w1 * x + w2 * y + b > 0 ? 1 : 0) === xorTarget(x, y))) throw new Error(`found ${w1},${w2},${b}`);
+      }
+    });
+    t('work budget: a direct answer is right only when the steps fit in one pass', () => {
+      for (const p of WORK_PROBLEMS) for (let budget = 1; budget <= 4; budget++) {
+        const r = work(p, budget, false);
+        eq(r.correct, p.ops.length <= budget, `${p.text} @${budget}`);
+        eq(r.answer === trueAnswer(p), r.correct, 'answer vs truth');
+      }
+    });
+    t('work budget: writing the steps out is always right, and costs more words as budget shrinks', () => {
+      for (const p of WORK_PROBLEMS) {
+        let last = 0;
+        for (let budget = 4; budget >= 1; budget--) {
+          const r = work(p, budget, true);
+          eq(r.answer, trueAnswer(p), p.text); eq(r.lines.length, Math.ceil(p.ops.length / budget), 'lines');
+          if (r.words < last) throw new Error('words should not fall as budget shrinks'); last = r.words;
+        }
+      }
+      eq(trueAnswer(WORK_PROBLEMS[3]), 28);
+    });
+
     // ---- story integrity (reads the screen sources) ----
-    const files = Array.from({ length: 14 }, (_, i) => `../js/screens/s${String(i).padStart(2, '0')}.js`);
+    const files = Array.from({ length: 15 }, (_, i) => `../js/screens/s${String(i).padStart(2, '0')}.js`);
     const sources = await Promise.all(files.map((f) => fetch(f).then((r) => r.text())));
 
     t('knowledge ids are unique and every ctx.learn() id exists', () => {
@@ -161,11 +195,11 @@
       const learned = new Set(sources.flatMap((s) => [...s.matchAll(/ctx\.learn\('([a-z]+)'\)/g)].map((m) => m[1])));
       for (const i of ITEMS.filter((i) => !i.ahead)) if (!learned.has(i.id)) throw new Error(`${i.id} never learned`);
     });
-    t('the last two items stay open (they are the next chapters)', () => {
-      eq(ITEMS.filter((i) => i.ahead).map((i) => i.id).join(), 'reasoning,agents');
+    t('the last item stays open (it is the next chapter)', () => {
+      eq(ITEMS.filter((i) => i.ahead).map((i) => i.id).join(), 'agents');
     });
-    t('honesty rule: every simplified visual says so on screen (screens 2 to 8 and 13)', () => {
-      for (const i of [2, 3, 4, 5, 6, 7, 8, 13]) if (!/Simplified:/.test(sources[i])) throw new Error(`screen ${i} lacks a "Simplified:" note`);
+    t('honesty rule: every simplified visual says so on screen (screens 2 to 8, 13 and 14)', () => {
+      for (const i of [2, 3, 4, 5, 6, 7, 8, 13, 14]) if (!/Simplified:/.test(sources[i])) throw new Error(`screen ${i} lacks a "Simplified:" note`);
     });
     t('no anthropomorphic phrasing in screen copy', () => {
       const banned = [/\bthe AI thinks\b/i, /\bthe AI remembers\b/i, /\bthe AI knows\b/i, /\bthe model thinks\b/i, /\bthe model remembers\b/i, /\bit understands\b/i];
@@ -177,7 +211,7 @@
     t('there is no right answer: screen 10 never says Correct', () => {
       if (/Correct|Wrong|Right!/i.test(sources[10])) throw new Error('graded language');
     });
-    t('screens 0 to 13 each export meta and a default run()', async () => {
+    t('screens 0 to 14 each export meta and a default run()', async () => {
       for (const s of sources) if (!/export const meta/.test(s) || !/export default async function/.test(s)) throw new Error('missing export');
     });
 

@@ -1,6 +1,6 @@
 # Page map
 
-Pages are numbered 0 to 13. The number is also the web address: page 5 is `…/#/5`. Use these numbers when asking for changes, for example "page 8, make the prompt sentence bigger".
+Pages are numbered 0 to 14. The number is also the web address: page 5 is `…/#/5`. Use these numbers when asking for changes, for example "page 8, make the prompt sentence bigger".
 
 ## The five text sizes used on most pages
 
@@ -19,7 +19,7 @@ These are the shared sizes. Changing one changes it on every page that uses it. 
 ```
 0 Arrival → 1 Think of a dog → 2 Numbers → 3 Latent space → 4 Context → 5 Attention → 6 Black box
    → 7 Machine runs → 8 Next token → 9 Doubt → 10 What do you think? → 11 Final reveal → 12 Keep going
-                                                                                          ↘ 13 How AI learns (optional chapter, opened from page 12)
+                                                                                          ↘ 13 How AI learns   ↘ 14 How AI reasons   (optional chapters, opened from page 12)
 ```
 
 | # | Page | What happens | Text styles on the page (shared size, then page-specific text) |
@@ -36,8 +36,9 @@ These are the shared sizes. Changing one changes it on every page that uses it. 
 | **9** | Doubt (dark page) | "Wait.", then the human and LLM lists of "dog" | Hero "Wait." · Mid · Big "They aren't the same." · Quiet · "DOG" 2.2rem · list items 1.12rem · column titles 0.72rem |
 | **10** | What do you think? | Yes / No / Not sure, then "Reasonable." | Hero question · answer words 1.8rem · answer notes 0.88rem · Big "Reasonable." · Quiet · Mid |
 | **11** | Final reveal | Two roads meet at "understanding?", then your own sentence | Hero "dog" · chain labels 0.95rem · "understanding?" 1.8 → 3.2rem · Mid · sentence form 1.25 → 1.9rem · your sentence back 1.5 → 2.5rem · Quiet |
-| **12** | Keep going | Four chapter cards ("How AI learns" is open, the rest say Coming next) and a recap of what you know | Big "Keep going" · card titles 1.45rem · card text 0.95rem · recap pills 0.88rem · Caption |
+| **12** | Keep going | Four chapter cards ("How AI learns" and "How AI reasons" are open, the rest say Coming next) and a recap of what you know | Big "Keep going" · card titles 1.45rem · card text 0.95rem · recap pills 0.88rem · Caption |
 | **13** | How AI learns | A tiny model really trains: read one sentence, then 200, and the word map organizes itself | Quiet · Big "So who places them…" / "Look at the neighborhoods." · Mid · word labels 1.05rem · guess panel words 0.95rem · panel titles 0.72rem · Caption |
+| **14** | How AI reasons | Part 1: a frozen network computes XOR and you take its middle step away. Part 2: a fixed machine answers right away or writes its steps | Quiet · Big "So how does a fixed set of numbers…" / "A harder problem." · Mid · input buttons 0.95rem · table 0.88rem · problem buttons 1rem · written steps 0.95rem · small labels 0.72rem · Caption |
 
 ## Always on screen (every page except 0)
 

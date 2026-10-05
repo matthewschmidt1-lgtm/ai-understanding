@@ -267,3 +267,62 @@ export function createLearner(seed = 2, { lr = 0.3 } = {}) {
     predict: (word) => probsFor(index[word]).map((p, k) => ({ token: LEARN_VOCAB[k], p })).sort((a, b2) => b2.p - a.p),
   };
 }
+
+// ---------- reasoning ----------
+// Part 1: a network with frozen, hand-set weights. Two "middle" units look at the inputs, and the
+// output reads the middle. Together they compute XOR ("exactly one input is on"), which no single
+// unit can compute with any weights (the tests check this exhaustively on a grid).
+export const XOR_WEIGHTS = {
+  h1: { w: [1, 1], b: -0.5, label: 'at least one is on' },
+  h2: { w: [1, 1], b: -1.5, label: 'both are on' },
+  out: { w: [1, -1], b: -0.5 },
+  single: { w: [1, 1], b: -0.5 }, // the best a lone unit can do here: it behaves like "at least one"
+};
+const step = (x) => (x > 0 ? 1 : 0);
+export const xorTarget = (a, b) => (a !== b ? 1 : 0);
+export function xorNet(a, b, { middle = true } = {}) {
+  const W = XOR_WEIGHTS;
+  if (!middle) return { a, b, h1: null, h2: null, out: step(W.single.w[0] * a + W.single.w[1] * b + W.single.b) };
+  const h1 = step(W.h1.w[0] * a + W.h1.w[1] * b + W.h1.b);
+  const h2 = step(W.h2.w[0] * a + W.h2.w[1] * b + W.h2.b);
+  return { a, b, h1, h2, out: step(W.out.w[0] * h1 + W.out.w[1] * h2 + W.out.b) };
+}
+
+// Part 2: a stylized "work budget". A fixed-depth machine can do only so many steps in one pass.
+// Written steps re-enter the context (as on screen 8), so each word buys another pass.
+export const WORK_PROBLEMS = [
+  { id: 'a', text: '3 + 4', start: 3, ops: [['+', 4]] },
+  { id: 'b', text: '(3 + 4) × 2', start: 3, ops: [['+', 4], ['×', 2]] },
+  { id: 'c', text: '(3 + 4) × 2 − 5', start: 3, ops: [['+', 4], ['×', 2], ['−', 5]] },
+  { id: 'd', text: '((3 + 4) × 2 − 5) × 3 + 1', start: 3, ops: [['+', 4], ['×', 2], ['−', 5], ['×', 3], ['+', 1]] },
+];
+const apply = (v, [op, n]) => (op === '+' ? v + n : op === '−' ? v - n : v * n);
+export const trueAnswer = (p) => p.ops.reduce(apply, p.start);
+
+// Answer in one pass (only `budget` steps fit), or write the steps out `budget` at a time.
+export function work(problem, budget, showWork) {
+  const { start, ops } = problem;
+  if (!showWork) {
+    const done = Math.min(budget, ops.length);
+    let v = start;
+    const hidden = [];
+    for (let i = 0; i < done; i++) {
+      const next = apply(v, ops[i]);
+      hidden.push(`${v} ${ops[i][0]} ${ops[i][1]} = ${next}`);
+      v = next;
+    }
+    return { lines: [], hidden, answer: v, correct: done === ops.length, stepsDone: done, words: 1 };
+  }
+  const lines = [];
+  let v = start;
+  for (let i = 0; i < ops.length; i += budget) {
+    const parts = [];
+    for (const o of ops.slice(i, i + budget)) {
+      const next = apply(v, o);
+      parts.push(`${v} ${o[0]} ${o[1]} = ${next}`);
+      v = next;
+    }
+    lines.push({ text: parts.join(', '), steps: parts.length });
+  }
+  return { lines, hidden: [], answer: v, correct: true, stepsDone: ops.length, words: lines.length + 1 };
+}

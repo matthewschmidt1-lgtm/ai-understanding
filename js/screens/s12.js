@@ -6,7 +6,7 @@ export const meta = { title: 'Where next' };
 
 const PATHS = [
   { id: 'learn', title: 'How AI learns', body: 'How billions of tiny weight adjustments create useful representations.', href: '#/13' },
-  { id: 'reason', title: 'How AI reasons', body: 'How fixed weights can implement surprisingly sophisticated computations.' },
+  { id: 'reason', title: 'How AI reasons', body: 'How fixed weights can implement surprisingly sophisticated computations.', href: '#/14' },
   { id: 'agent', title: 'How AI becomes an agent', body: 'What changes when an LLM gets memory, tools, goals, and the ability to act.' },
   { id: 'human', title: 'Human vs. AI', body: 'What neuroscience can, and cannot, tell us about the comparison.' },
 ];
