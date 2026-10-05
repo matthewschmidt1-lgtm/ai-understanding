@@ -41,7 +41,7 @@ export const LATENT = {
   settled: {
     dog: [30, 52],
     wolf: [38, 36],
-    cat: [43, 63],
+    cat: [40, 60],
     car: [80, 82],
     puppy: [21, 42],
     fox: [48, 42],

@@ -32,14 +32,20 @@ export function keyboardMode() {
 const liveRegion = () => document.getElementById('sr-live');
 
 // New content below the fold scrolls gently into view; nothing above it moves.
+// A screen can pin its main figure: scrolling for new content never pushes the pinned figure under the header.
+let pinned = null;
 function keepInView(el) {
   requestAnimationFrame(() => {
     const r = el.getBoundingClientRect();
-    if (r.bottom > window.innerHeight - 24) window.scrollBy({ top: r.bottom - window.innerHeight + 96, behavior: motion.reduced ? 'auto' : 'smooth' });
+    if (r.bottom <= window.innerHeight - 24) return;
+    let delta = r.bottom - window.innerHeight + 96;
+    if (pinned && pinned.isConnected && pinned !== el) delta = Math.min(delta, pinned.getBoundingClientRect().top - 84);
+    if (delta > 4) window.scrollBy({ top: delta, behavior: motion.reduced ? 'auto' : 'smooth' });
   });
 }
 
 export function createContext({ root, col, signal }) {
+  pinned = null;
   const guard = (promise) =>
     new Promise((resolve, reject) => {
       if (signal.aborted) return reject(new Aborted());
@@ -178,6 +184,9 @@ export function createContext({ root, col, signal }) {
     loop,
     on,
     guard,
+    pin(el) {
+      pinned = el;
+    },
     learn: (id) => learnConcept(id),
     live(text) {
       const region = liveRegion();

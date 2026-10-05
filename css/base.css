@@ -42,7 +42,8 @@ body[data-theme='ink'] .grain { mix-blend-mode: screen; opacity: 0.25; }
 .chrome > * { pointer-events: auto; }
 .brand { font: 600 0.72rem var(--sans); letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-3); text-decoration: none; padding: 0.5rem 0; }
 .brand:hover { color: var(--ink); }
-.chrome-foot { position: fixed; z-index: 20; left: var(--gutter); bottom: 1rem; transition: opacity 0.9s, visibility 0.9s; }
+.chrome-foot { position: fixed; z-index: 20; left: 0; right: 0; bottom: 0; padding: 1.4rem var(--gutter) 0.5rem; background: linear-gradient(transparent, var(--paper) 65%); pointer-events: none; transition: opacity 0.9s, visibility 0.9s, background 1.4s; }
+.chrome-foot > * { pointer-events: auto; }
 .restart { background: none; border: 0; color: var(--ink-3); font: 500 0.78rem var(--sans); letter-spacing: 0.04em; padding: 0.7rem 0.4rem; text-decoration: underline; text-decoration-color: var(--line); text-underline-offset: 4px; }
 .restart:hover { color: var(--ink); }
 body[data-screen='0'] .chrome, body[data-screen='0'] .chrome-foot { opacity: 0; visibility: hidden; }

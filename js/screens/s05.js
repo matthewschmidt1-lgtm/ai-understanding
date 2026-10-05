@@ -50,8 +50,8 @@ export default async function run(ctx) {
       t.classList.toggle('src', self);
       t.classList.toggle('lit', !self && w > 0.03);
       t.setAttribute('aria-pressed', String(self));
-      t.style.setProperty('--w', self ? 0 : w);
-      t.querySelector('.tok-pct').textContent = w > 0.015 && !self ? `${Math.round(w * 100)}%` : '';
+      t.style.setProperty('--w', w);
+      t.querySelector('.tok-pct').textContent = w > 0.015 ? `${Math.round(w * 100)}%` : '';
       if (self || w < 0.03) return;
       const to = anchor(t.querySelector('.tok-w'), box);
       // On a wrapped line, earlier words sit on the row above: arc up into the gap and land under them.
@@ -77,6 +77,7 @@ export default async function run(ctx) {
   }
 
   await ctx.add(ui.wrap, { hold: 1000 });
+  ctx.pin(ui.wrap);
   const hint = await ctx.say('Hover over “it”. On a touch screen, tap it.', { cls: 'quiet', hold: 0 });
   ctx.learn('attention');
 
@@ -130,8 +131,8 @@ export default async function run(ctx) {
   await ctx.add(heads, { hold: 200 });
   await ctx.add(note, { hold: 1600 });
 
-  await ctx.say('It’s not “thinking about” the sentence. It’s computing relationships within the context.', { cls: 'mid', hold: 2200 });
-  await ctx.say('Simplified: these patterns are hand-written. Real models learn many patterns at once, and each word can only look backward, at the words before it.', { cls: 'caption', hold: 500 });
-  await ctx.say('If attention can connect any word to any other, what could happen when you stack hundreds of these?', { cls: 'mid', hold: 600 });
+  await ctx.say('Described mechanically, it’s computing relationships within the context. Whether that counts as “thinking about” the sentence is the question we’ll end on.', { cls: 'mid', hold: 2200 });
+  await ctx.say('Simplified: these patterns are hand-written. Real models learn many patterns at once, and each word can only look backward. Each word’s percentages add up to 100%, and the share on the word itself is shown too.', { cls: 'caption', hold: 500 });
+  await ctx.say('If every word can draw on the words before it, what could happen when you stack dozens of these layers?', { cls: 'mid', hold: 600 });
   await ctx.button('Open the black box');
 }

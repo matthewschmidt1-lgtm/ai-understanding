@@ -39,7 +39,7 @@ export default async function run(ctx) {
   await ctx.add(fig, { hold: 1200 });
   await ctx.wait(4200);
   await ctx.say('Maybe the interesting question isn’t whether AI thinks like us.', { cls: 'mid', hold: 3000 });
-  await ctx.say('Maybe it’s how something completely different can produce behavior that looks so familiar.', { cls: 'mid', hold: 3400 });
+  await ctx.say('Maybe it’s how something so different can produce behavior that looks so familiar.', { cls: 'mid', hold: 3400 });
 
   await ctx.clear();
   await ctx.say('One last thing. In your own words, complete this sentence.', { cls: 'mid', hold: 500 });

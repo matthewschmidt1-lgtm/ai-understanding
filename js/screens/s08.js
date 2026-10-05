@@ -8,7 +8,7 @@ const label = (p) => (p < 0.005 ? '<1%' : `${Math.round(p * 100)}%`);
 
 // Top few tokens plus everything else, from a full distribution.
 function topRows(dist, n = 4) {
-  const sorted = [...dist].sort((a, b) => b.p - a.p);
+  const sorted = dist.filter((d) => !d.token.startsWith('(')).sort((a, b) => b.p - a.p); // "(rare)" and "(other)" fold into the last row
   const top = sorted.slice(0, n);
   const rest = 1 - top.reduce((s, d) => s + d.p, 0);
   return rest > 0.0005 ? [...top, { token: '… all others', p: rest, other: true }] : top;
@@ -49,6 +49,7 @@ export default async function run(ctx) {
   const slot = h('span', { class: 'p-slot' });
   const prompt = h('p', { class: 'prompt', 'aria-label': 'The capital of France is' }, h('span', {}, 'The capital of France is'), slot, h('span', { class: 'caret', 'aria-hidden': 'true' }));
   await ctx.add(prompt, { hold: 1500 });
+  ctx.pin(prompt);
   ctx.learn('probability');
 
   const c = chart();
@@ -58,7 +59,7 @@ export default async function run(ctx) {
   c.set(distribution(NEXT_FRANCE));
   await ctx.wait(2400);
 
-  await ctx.say('The model doesn’t simply retrieve the answer.', { cls: 'mid', hold: 2000 });
+  await ctx.say('The model doesn’t hand back one fixed answer.', { cls: 'mid', hold: 2000 });
   await ctx.say('It produces a probability distribution over possible next tokens.', { cls: 'mid', hold: 2400 });
 
   // Paris is chosen and folds into the sentence.
@@ -114,7 +115,7 @@ export default async function run(ctx) {
   redraw();
   await ctx.add(controls, { hold: 300 });
   await ctx.add(tallyEl, { hold: 200 });
-  await ctx.say('Low randomness almost always picks the top token. High randomness lets unlikely ones through. The scores are the same; only the drawing changes.', { id: 'temp-note', cls: 'caption', hold: 400 });
+  await ctx.say('The model’s raw scores stay the same. The dial reshapes them into probabilities before one is drawn: low randomness makes the top token almost certain, high randomness lets unlikely ones through.', { id: 'temp-note', cls: 'caption', hold: 400 });
   await ctx.say('Simplified: the probabilities are illustrative, and real models split text into tokens differently from whole words.', { cls: 'caption', hold: 500 });
   await ctx.button('Next');
 }

@@ -88,6 +88,8 @@
 .tok-bar { display: block; height: 3px; width: 100%; margin-top: 0.15rem; border-radius: 3px; background: var(--ai); transform-origin: left; transform: scaleX(var(--w, 0)); transition: transform 0.6s var(--ease-out); }
 .tok-pct { font: 500 0.72rem var(--mono); color: var(--ai-ink); min-height: 1.1em; }
 .tok.src .tok-w { color: var(--human-ink); }
+.tok.src .tok-bar { background: var(--human); }
+.tok.src .tok-pct { color: var(--human-ink); }
 .tok.lit .tok-w { color: var(--ai-ink); }
 .tok.hint { animation: hint 2.4s ease-in-out infinite; }
 @keyframes hint { 0%, 100% { background: rgb(196 112 63 / 0); } 50% { background: rgb(196 112 63 / 0.22); } }
@@ -125,7 +127,7 @@
 .lay.open .lay-panel { grid-template-rows: 1fr; }
 .lay-panel-in { overflow: hidden; min-height: 0; visibility: hidden; transition: visibility 0s 0.6s; }
 .lay.open .lay-panel-in { visibility: visible; transition-delay: 0s; }
-.lay-card { margin-top: 0.45rem; padding: 1rem 1rem 0.9rem; border-radius: 16px; border: 1px solid var(--line); background: var(--card); display: grid; justify-items: center; gap: 0.45rem; text-align: center; opacity: 0; transition: opacity 0.5s 0.2s; }
+.lay-card { min-width: 0; margin-top: 0.45rem; padding: 1rem 1rem 0.9rem; border-radius: 16px; border: 1px solid var(--line); background: var(--card); display: grid; justify-items: center; gap: 0.45rem; text-align: center; opacity: 0; transition: opacity 0.5s 0.2s; }
 .lay.open .lay-card { opacity: 1; }
 .lay-note { font: 400 1.05rem / 1.4 var(--serif); }
 .lay-watch { font: 400 0.8rem / 1.45 var(--sans); color: var(--ink-3); max-width: 22rem; }
@@ -142,11 +144,11 @@
 .vz-cap { font: 400 0.72rem var(--sans); color: var(--ink-3); }
 /* tokens */
 .viz-tokens { display: grid; justify-items: center; gap: 0.2rem; }
-.vt-row { display: flex; justify-content: center; gap: 0.55rem; animation: vtGap 6s ease-in-out infinite; }
+.vt-row { display: flex; flex-wrap: wrap; row-gap: 0.5rem; column-gap: 0.55rem; justify-content: center; animation: vtGap 6s ease-in-out infinite; }
 .vt-cell { display: grid; justify-items: center; gap: 0.3rem; }
 .vt-chip { font: 400 0.95rem var(--mono); padding: 0.3rem 0.55rem; border-radius: 99px; border: 1px solid var(--ai); background: var(--ai-soft); color: var(--ai-ink); animation: vtChip 6s ease-in-out infinite; }
 .vt-id { font: 400 0.7rem var(--mono); color: var(--ink-3); animation: vtId 6s ease-in-out infinite; animation-delay: calc(var(--i) * 0.1s); animation-fill-mode: both; }
-@keyframes vtGap { 0%, 14% { gap: 0; } 30%, 82% { gap: 0.55rem; } 96%, 100% { gap: 0; } }
+@keyframes vtGap { 0%, 14% { column-gap: 0; } 30%, 82% { column-gap: 0.55rem; } 96%, 100% { column-gap: 0; } }
 @keyframes vtChip { 0%, 14% { border-color: transparent; background: transparent; color: var(--ink); } 30%, 82% { border-color: var(--ai); background: var(--ai-soft); color: var(--ai-ink); } 96%, 100% { border-color: transparent; background: transparent; color: var(--ink); } }
 @keyframes vtId { 0%, 30% { opacity: 0; } 46%, 82% { opacity: 1; } 96%, 100% { opacity: 0; } }
 /* embeddings, final-state bars */
@@ -319,8 +321,10 @@ html[data-motion='reduced'] .rv.in .n-edge, html[data-motion='reduced'] .rv.in .
 .rv.in .tree ul::after { animation: signalDown 3.6s ease-in-out 4.6s infinite; }
 @keyframes signalDown { 0% { top: 0; opacity: 0; } 12%, 88% { opacity: 1; } 100% { top: calc(100% - 6px); opacity: 0; } }
 .recap li { opacity: 0; transform: translateY(6px); }
-.rv.in .recap li { animation: itemIn 0.6s var(--ease-out) calc(0.2s + var(--i) * 0.09s) forwards; }
+.recap.in li { animation: itemIn 0.6s var(--ease-out) calc(0.2s + var(--i) * 0.09s) forwards; }
 .path { opacity: 0; transform: translateY(10px); }
 .rv.in .path { animation: itemIn 0.8s var(--ease-out) calc(0.3s + var(--i) * 0.15s) forwards; }
 html[data-motion='reduced'] .xf-dot, html[data-motion='reduced'] .field.explore .pt .dot, html[data-motion='reduced'] .chip.step, html[data-motion='reduced'] .again b, html[data-motion='reduced'] .rv.in .tree ul::after { animation: none; }
-html[data-motion='reduced'] .rv.in .m-in .chip, html[data-motion='reduced'] .rv.in .recap li, html[data-motion='reduced'] .rv.in .path, html[data-motion='reduced'] .ctx-arc { animation-duration: 0.01s; animation-delay: 0s; }
+html[data-motion='reduced'] .rv.in .m-in .chip, html[data-motion='reduced'] .recap.in li, html[data-motion='reduced'] .rv.in .path, html[data-motion='reduced'] .ctx-arc { animation-duration: 0.01s; animation-delay: 0s; }
+
+.simv { font: 500 0.72rem var(--mono); color: var(--both-ink); }

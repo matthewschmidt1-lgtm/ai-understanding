@@ -123,8 +123,8 @@ export const WATCH = {
   tokens: 'Watch the sentence get cut into pieces, each with an ID number.',
   embeddings: 'Watch each piece turn into its own column of numbers.',
   attention: 'Watch information flow from earlier words into “ball”. Thicker means more.',
-  mlp: 'Watch a short list of numbers widen, mix, and come out changed.',
+  mlp: 'Watch one token’s list of numbers widen, mix, and come out changed. Every token gets this treatment separately.',
   residual: 'Watch the running state pick up something at each block.',
-  layers: 'Watch the same two steps repeat, with the state growing richer each time.',
+  layers: 'Watch a similar pair of steps repeat, each layer with its own learned numbers, the state growing richer each time.',
   final: 'Watch the finished state become scores for what could come next.',
 };

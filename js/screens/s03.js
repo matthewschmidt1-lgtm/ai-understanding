@@ -27,13 +27,13 @@ function field() {
 // Draw lines from `id` to its nearest neighbours, labelled with the illustrative similarity.
 function neighbours(f, id, positions, k = 3) {
   f.lines.replaceChildren();
-  f.wrap.querySelectorAll('.sim').forEach((n) => n.remove());
+  f.wrap.querySelectorAll('.simv').forEach((n) => n.remove());
   f.wrap.querySelectorAll('.pt').forEach((p) => p.classList.toggle('sel', p.dataset.id === id));
   const here = positions[id];
   nearest(id, positions, k).forEach(({ id: other, sim }) => {
     const to = positions[other];
     f.lines.append(h('line', { x1: here[0], y1: here[1], x2: to[0], y2: to[1], class: 'lat-line', style: { 'stroke-opacity': 0.25 + sim * 0.6, 'stroke-width': 1 + sim * 2.4 } }));
-    f.wrap.append(h('span', { class: 'sim', style: { left: `${here[0] + (to[0] - here[0]) * 0.62}%`, top: `${here[1] + (to[1] - here[1]) * 0.62}%` } }, sim.toFixed(2)));
+    f.pts[other].append(h('span', { class: 'simv' }, sim.toFixed(2)));
   });
 }
 
@@ -41,6 +41,7 @@ export default async function run(ctx) {
   const q = await ctx.say('Which is more like “dog”?', { cls: 'mid', hold: 600 });
   const f = field();
   await ctx.add(f.wrap, { hold: 700 });
+  ctx.pin(f.wrap);
   ctx.learn('latent');
 
   // Cat, wolf or car: the visitor picks one of the words on the map.
@@ -107,6 +108,6 @@ export default async function run(ctx) {
     if (p) neighbours(f, p.dataset.id, LATENT.settled);
   });
   await ctx.say('This is the intuition behind “latent space.”', { cls: 'caption strong', hold: 400 });
-  await ctx.say('Simplified: a flat shadow of a space with thousands of dimensions, with positions placed by hand. Tap any word to see its nearest neighbours.', { cls: 'caption', hold: 500 });
+  await ctx.say('Simplified: a flat shadow of a space with thousands of dimensions, with positions placed by hand. The small numbers are similarity (1 means identical). Tap any word to see its nearest neighbours.', { cls: 'caption', hold: 500 });
   await ctx.button('Next');
 }

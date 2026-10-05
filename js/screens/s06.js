@@ -34,7 +34,7 @@ function stack(onToggle) {
     const panel = h(
       'div',
       { class: 'lay-panel', id: `lp-${l.id}` },
-      h('div', { class: 'lay-panel-in' }, h('div', { class: 'lay-card' }, VIZ[l.id](), h('p', { class: 'lay-note' }, l.note), h('p', { class: 'lay-watch' }, WATCH[l.id]))),
+      h('div', { class: 'lay-panel-in' }, h('div', { class: 'lay-card' }, VIZ[l.id](), h('p', { class: 'lay-note' }, l.note), h('p', { class: 'lay-watch' }, `${WATCH[l.id]} Simplified illustration.`))),
     );
     const btn = h(
       'button',
@@ -50,6 +50,7 @@ function stack(onToggle) {
 export default async function run(ctx) {
   const box = closed();
   await ctx.add(box, { hold: 1200 });
+  ctx.pin(box);
   await ctx.say('Something happens in here.', { cls: 'quiet', hold: 600 });
   await ctx.button('Open the box');
   await ctx.clear({ keep: [box] });
