@@ -86,9 +86,9 @@ export const FACETS = [
 ];
 
 export const DOG_CONTEXTS = [
-  { text: 'The dog chased the ball.', facets: { animal: 0.88, motion: 0.86, size: 0.35, symbol: 0.05, space: 0.2 } },
-  { text: 'The dog was too large for the apartment.', facets: { animal: 0.7, motion: 0.1, size: 0.92, symbol: 0.05, space: 0.88 } },
-  { text: 'The dog in the logo represents loyalty.', facets: { animal: 0.3, motion: 0.04, size: 0.08, symbol: 0.94, space: 0.05 } },
+  { text: 'The dog chased the ball.', pulls: ['chased', 'ball'], facets: { animal: 0.88, motion: 0.86, size: 0.35, symbol: 0.05, space: 0.2 } },
+  { text: 'The dog was too large for the apartment.', pulls: ['large', 'apartment'], facets: { animal: 0.7, motion: 0.1, size: 0.92, symbol: 0.05, space: 0.88 } },
+  { text: 'The dog in the logo represents loyalty.', pulls: ['logo', 'loyalty'], facets: { animal: 0.3, motion: 0.04, size: 0.08, symbol: 0.94, space: 0.05 } },
 ];
 
 // Blend facet colours by (sharpened) weight: the glow is computed, not picked per sentence.

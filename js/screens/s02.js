@@ -13,9 +13,9 @@ function figure() {
     'figure',
     { class: 'xform', 'aria-label': 'The word dog is split into a token, which is looked up as a list of numbers beginning 0.21, minus 0.73, 0.48, 0.09.' },
     h('div', { class: 'xf-step' }, h('span', { class: 'chip word' }, 'dog')),
-    h('div', { class: 'xf-arrow', 'aria-hidden': 'true' }, h('span', {}, 'split into a token')),
+    h('div', { class: 'xf-arrow', 'aria-hidden': 'true' }, h('span', {}, 'split into a token'), h('i', { class: 'xf-dot' })),
     h('div', { class: 'xf-step' }, h('span', { class: 'chip token' }, 'dog', h('small', {}, 'token'))),
-    h('div', { class: 'xf-arrow', 'aria-hidden': 'true' }, h('span', {}, 'look up its numbers')),
+    h('div', { class: 'xf-arrow', 'aria-hidden': 'true' }, h('span', {}, 'look up its numbers'), h('i', { class: 'xf-dot', style: { '--d': '1.1s' } })),
     h('div', { class: 'xf-step' }, h('div', { class: 'vec', 'aria-hidden': 'true' }, h('span', { class: 'br' }, '['), ...cells.slice(0, 6), h('span', { class: 'dots' }, '…'), h('span', { class: 'br' }, ']'))),
   );
   return { fig, cells, vec };

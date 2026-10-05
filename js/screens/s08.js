@@ -83,8 +83,8 @@ export default async function run(ctx) {
   const loop = h(
     'div',
     { class: 'loopflow', role: 'img', 'aria-label': 'A loop: prompt, prediction, new token, updated context, and back to prediction, again and again.' },
-    ...flow.flatMap((f, i) => [h('span', { class: 'chip step' }, f), i < flow.length - 1 ? h('span', { class: 'arrow', 'aria-hidden': 'true' }, '→') : null]),
-    h('span', { class: 'again', 'aria-hidden': 'true' }, '↺ repeat'),
+    ...flow.flatMap((f, i) => [h('span', { class: 'chip step', style: { '--i': i } }, f), i < flow.length - 1 ? h('span', { class: 'arrow', 'aria-hidden': 'true' }, '→') : null]),
+    h('span', { class: 'again', 'aria-hidden': 'true' }, h('b', {}, '↺'), ' repeat'),
   );
   await ctx.add(loop, { hold: 1800 });
   await ctx.say('One token at a time.', { cls: 'big', hold: 1900 });

@@ -18,7 +18,7 @@ function machine() {
   const m = h(
     'div',
     { class: 'machine' },
-    h('div', { class: 'm-in' }, h('span', { class: 'cap' }, 'YOUR WORDS'), h('div', { class: 'chips' }, ...WORDS.map((w) => h('span', { class: 'chip token' }, w)))),
+    h('div', { class: 'm-in' }, h('span', { class: 'cap' }, 'YOUR WORDS'), h('div', { class: 'chips' }, ...WORDS.map((w, i) => h('span', { class: 'chip token', style: { '--i': i } }, w)))),
     h('span', { class: 'arrow', 'aria-hidden': 'true' }, '↓'),
     h('div', { class: 'm-body' }, ...rows, h('div', { class: 'mrow dots', 'aria-hidden': 'true' }, '⋮'), counter),
     h('span', { class: 'arrow', 'aria-hidden': 'true' }, '↓'),

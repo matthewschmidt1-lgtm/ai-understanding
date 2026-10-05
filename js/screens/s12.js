@@ -30,7 +30,7 @@ export default async function run(ctx) {
   const recap = h(
     'ul',
     { class: 'recap', 'aria-label': 'What you now know' },
-    ...ITEMS.map((i) => h('li', { class: known.has(i.id) ? 'done' : 'ahead' }, h('span', { 'aria-hidden': 'true' }, known.has(i.id) ? '✓ ' : '○ '), i.label, h('span', { class: 'sr-only' }, known.has(i.id) ? ': learned' : ': still ahead'))),
+    ...ITEMS.map((i, n) => h('li', { class: known.has(i.id) ? 'done' : 'ahead', style: { '--i': n } }, h('span', { 'aria-hidden': 'true' }, known.has(i.id) ? '✓ ' : '○ '), i.label, h('span', { class: 'sr-only' }, known.has(i.id) ? ': learned' : ': still ahead'))),
   );
   await ctx.say('What you now know', { cls: 'caption strong', hold: 300 });
   await ctx.add(recap, { hold: 900 });

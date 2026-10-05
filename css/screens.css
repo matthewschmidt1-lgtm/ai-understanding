@@ -27,7 +27,7 @@
 
 /* ---- screen 2 ---- */
 .xform { display: flex; flex-direction: column; align-items: center; gap: 0.15rem; margin: 0; width: min(100%, 38rem); }
-.xf-arrow { display: grid; justify-items: center; gap: 0.25rem; padding: 0.3rem 0; }
+.xf-arrow { position: relative; display: grid; justify-items: center; gap: 0.25rem; padding: 0.3rem 0; }
 .xf-arrow::before, .xf-arrow::after { content: ''; width: 1px; height: 0.9rem; background: var(--ink-3); opacity: 0.5; }
 .xf-arrow span { font: 600 0.66rem var(--sans); letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-3); }
 .vec { display: flex; flex-wrap: wrap; gap: 0.35rem 0.9rem; justify-content: center; align-items: baseline; font: 400 clamp(0.9rem, 2.6vw, 1.4rem) var(--mono); color: var(--ai-ink); padding: 0.4rem 0; font-variant-numeric: tabular-nums; }
@@ -64,7 +64,11 @@
 .ctx { position: relative; display: grid; justify-items: center; gap: 0.6rem; width: 100%; padding: 1rem 0 0.4rem; }
 .glow { position: absolute; top: -1rem; width: min(34rem, 100%); aspect-ratio: 1.5; border-radius: 50%; background: radial-gradient(closest-side, rgb(var(--gr) var(--gg) var(--gb) / 0.5), transparent); filter: blur(24px); transition: --gr 1.4s var(--ease-io), --gg 1.4s var(--ease-io), --gb 1.4s var(--ease-io); pointer-events: none; }
 .ctx-word { position: relative; font: 400 var(--step-hero) / 1 var(--serif); letter-spacing: -0.04em; }
-.ctx-sentence { position: relative; font: 400 var(--step-mid) / 1.35 var(--serif); min-height: 2.8em; max-width: 30rem; text-wrap: balance; }
+.ctx-sent { position: relative; width: min(100%, 34rem); padding-top: 2.2rem; }
+.ctx-arcs { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.ctx-arc { fill: none; stroke: rgb(var(--gr) var(--gg) var(--gb) / 0.9); stroke-width: 2; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw 0.9s var(--ease-out) forwards; }
+.pull { border-bottom: 2px solid rgb(var(--gr) var(--gg) var(--gb) / 0.6); }
+.ctx-sentence { position: relative; font: 400 var(--step-mid) / 1.5 var(--serif); min-height: 2.8em; text-wrap: balance; }
 .ctx-sentence mark { background: rgb(var(--gr) var(--gg) var(--gb) / 0.3); color: inherit; padding: 0 0.14em; margin: 0 -0.04em; border-radius: 0.25em; transition: background-color 1.2s; }
 .ctx-sentence.swap { animation: swapIn 0.9s var(--ease-out); }
 @keyframes swapIn { from { opacity: 0; transform: translateY(8px); filter: blur(6px); } }
@@ -296,3 +300,27 @@ html[data-motion='reduced'] .arc, html[data-motion='reduced'] .lat-line, html[da
 html[data-motion='reduced'] .rv.in .tree li, html[data-motion='reduced'] .rv.in .chain li, html[data-motion='reduced'] .rv.in .f-q { animation-duration: 0.01s; animation-delay: 0s; }
 html[data-motion='reduced'] .rv.in .j { transition-duration: 0.01s; transition-delay: 0s; }
 html[data-motion='reduced'] .rv.in .n-edge, html[data-motion='reduced'] .rv.in .n-node { transition-duration: 0.01s; transition-delay: 0s; }
+
+/* ---- ambient motion on the other screens (screens 2, 3, 7, 8, 9, 12) ---- */
+.xf-dot { position: absolute; left: 50%; top: 0; width: 7px; height: 7px; margin-left: -3.5px; border-radius: 50%; background: var(--ai); opacity: 0; animation: xfDot 2.2s ease-in-out infinite; animation-delay: var(--d, 0s); }
+@keyframes xfDot { 0% { top: 0; opacity: 0; } 15%, 80% { opacity: 1; } 100% { top: calc(100% - 7px); opacity: 0; } }
+.field.explore .pt .dot { animation: ptFloat 5s ease-in-out infinite alternate; }
+.field.explore .pt:nth-child(3n) .dot { animation-duration: 6.4s; animation-delay: -1.7s; }
+.field.explore .pt:nth-child(3n + 1) .dot { animation-duration: 4.2s; animation-delay: -0.6s; }
+@keyframes ptFloat { from { translate: 0 0; } to { translate: 2px -3px; } }
+.rv.in .m-in .chip { animation: chipDrop 0.9s var(--ease-out) both; animation-delay: calc(var(--i) * 0.12s); }
+@keyframes chipDrop { from { opacity: 0; transform: translateY(-16px); } }
+.chip.step { animation: stepOn 4.8s ease-in-out infinite; animation-delay: calc(var(--i) * 1.2s); }
+@keyframes stepOn { 0%, 20% { background: var(--ink); color: var(--paper); border-color: var(--ink); } 28%, 100% { background: var(--paper-2); color: var(--ink); border-color: var(--line); } }
+.again b { display: inline-block; font-weight: 400; animation: spin 4.8s linear infinite; }
+@keyframes spin { to { transform: rotate(-360deg); } }
+.tree ul { position: relative; }
+.tree ul::after { content: ''; position: absolute; left: -4px; top: 0; width: 6px; height: 6px; border-radius: 50%; background: var(--c); opacity: 0; }
+.rv.in .tree ul::after { animation: signalDown 3.6s ease-in-out 4.6s infinite; }
+@keyframes signalDown { 0% { top: 0; opacity: 0; } 12%, 88% { opacity: 1; } 100% { top: calc(100% - 6px); opacity: 0; } }
+.recap li { opacity: 0; transform: translateY(6px); }
+.rv.in .recap li { animation: itemIn 0.6s var(--ease-out) calc(0.2s + var(--i) * 0.09s) forwards; }
+.path { opacity: 0; transform: translateY(10px); }
+.rv.in .path { animation: itemIn 0.8s var(--ease-out) calc(0.3s + var(--i) * 0.15s) forwards; }
+html[data-motion='reduced'] .xf-dot, html[data-motion='reduced'] .field.explore .pt .dot, html[data-motion='reduced'] .chip.step, html[data-motion='reduced'] .again b, html[data-motion='reduced'] .rv.in .tree ul::after { animation: none; }
+html[data-motion='reduced'] .rv.in .m-in .chip, html[data-motion='reduced'] .rv.in .recap li, html[data-motion='reduced'] .rv.in .path, html[data-motion='reduced'] .ctx-arc { animation-duration: 0.01s; animation-delay: 0s; }
