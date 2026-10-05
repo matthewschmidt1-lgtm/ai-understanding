@@ -13,7 +13,13 @@ export default async function run(ctx) {
   );
   ctx.state.set('verdict', value);
   await ctx.clear();
-  await ctx.say('Reasonable.', { cls: 'big', hold: 2000 });
+  await ctx.say('Reasonable.', { cls: 'big', hold: 1600 });
+  const mirror = {
+    yes: 'Then the question becomes what, exactly, the model has that counts.',
+    no: 'Then the question becomes what, exactly, is missing.',
+    unsure: 'That is an honest place to stand.',
+  };
+  await ctx.say(mirror[value], { cls: 'quiet', hold: 2200 });
   await ctx.say('Here’s the uncomfortable part:', { cls: 'quiet', hold: 1200 });
   await ctx.say('The behavior alone doesn’t tell us what’s happening inside.', { cls: 'mid', hold: 3200 });
   await ctx.say('We can inspect the computation. We can study the representations. We can test what the model can generalize.', { cls: 'mid', hold: 3600 });

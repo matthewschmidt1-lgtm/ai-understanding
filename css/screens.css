@@ -328,3 +328,27 @@ html[data-motion='reduced'] .xf-dot, html[data-motion='reduced'] .field.explore 
 html[data-motion='reduced'] .rv.in .m-in .chip, html[data-motion='reduced'] .recap.in li, html[data-motion='reduced'] .rv.in .path, html[data-motion='reduced'] .ctx-arc { animation-duration: 0.01s; animation-delay: 0s; }
 
 .simv { font: 500 0.72rem var(--mono); color: var(--both-ink); }
+
+/* ---- screen 13: learning ---- */
+.field.live .pt { transition: none; }
+.field.pickable .pt { cursor: pointer; }
+@media (hover: hover) { .field.pickable .pt:hover .dot { transform: scale(1.45); } }
+.lp { display: grid; grid-template-columns: 1.2fr 1fr; gap: 1rem; width: min(100%, 40rem); text-align: left; }
+.lp-card { padding: 1rem 1.1rem; border-radius: 18px; border: 1px solid var(--line); background: var(--card); display: grid; gap: 0.6rem; align-content: start; }
+.lp-title { font: 600 0.72rem var(--sans); letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); }
+.lp-card .bars { width: 100%; gap: 0.4rem; }
+.lp-card .brow { grid-template-columns: 4.6rem 1fr 2.6rem; gap: 0.6rem; }
+.lp-card .bl { font-size: 0.95rem; }
+.lp-card .bp { font-size: 0.8rem; }
+.spark { width: 100%; height: 3.6rem; overflow: visible; }
+.sp-base { stroke: var(--line); stroke-width: 1; fill: none; vector-effect: non-scaling-stroke; }
+.sp-line { fill: none; stroke: var(--both); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.sp-read { font: 400 0.82rem var(--sans); color: var(--ink-2); }
+.sp-read strong { font: 600 0.95rem var(--mono); color: var(--both-ink); }
+@media (max-width: 640px) { .lp { grid-template-columns: 1fr; } }
+.path.live { border-top-color: var(--both); background: var(--both-soft); }
+.path a { display: block; color: inherit; text-decoration: none; margin: -1.4rem -1.5rem -1.5rem; padding: 1.4rem 1.5rem 1.5rem; border-radius: 24px; }
+.path.live .soon { background: var(--paper); }
+@media (hover: hover) { .path.live:hover { transform: translateY(-3px); } }
+.field.learn { width: min(100%, 34rem); aspect-ratio: 16 / 10; }
+@media (max-width: 640px) { .field.learn { aspect-ratio: 1 / 1; } }

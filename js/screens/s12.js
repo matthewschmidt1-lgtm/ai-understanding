@@ -5,7 +5,7 @@ import { ITEMS } from '../knowledge.js';
 export const meta = { title: 'Where next' };
 
 const PATHS = [
-  { id: 'learn', title: 'How AI learns', body: 'How billions of tiny weight adjustments create useful representations.' },
+  { id: 'learn', title: 'How AI learns', body: 'How billions of tiny weight adjustments create useful representations.', href: '#/13' },
   { id: 'reason', title: 'How AI reasons', body: 'How fixed weights can implement surprisingly sophisticated computations.' },
   { id: 'agent', title: 'How AI becomes an agent', body: 'What changes when an LLM gets memory, tools, goals, and the ability to act.' },
   { id: 'human', title: 'Human vs. AI', body: 'What neuroscience can, and cannot, tell us about the comparison.' },
@@ -16,9 +16,10 @@ export default async function run(ctx) {
   const grid = h(
     'ul',
     { class: 'paths' },
-    ...PATHS.map((p, i) =>
-      h('li', { class: 'path', style: { '--i': i } }, h('span', { class: 'soon' }, 'Coming next'), h('h2', {}, p.title), h('p', {}, p.body)),
-    ),
+    ...PATHS.map((p, i) => {
+      const inner = [h('span', { class: 'soon' }, p.href ? 'Ready now' : 'Coming next'), h('h2', {}, p.title), h('p', {}, p.body)];
+      return h('li', { class: `path ${p.href ? 'live' : ''}`.trim(), style: { '--i': i } }, p.href ? h('a', { href: p.href }, ...inner) : inner);
+    }),
   );
   await ctx.add(grid, { hold: 1600 });
 

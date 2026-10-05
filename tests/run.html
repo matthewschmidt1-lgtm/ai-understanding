@@ -13,7 +13,7 @@
   <h1>Does AI Understand? Tests</h1>
   <pre id="out"></pre>
   <script type="module">
-    import { softmax, distribution, sample, mulberry32, embeddingFor, LATENT, similarity, nearest, SENTENCE, attentionFrom, glowColor, DOG_CONTEXTS, FACETS, NEXT_FRANCE, NEXT_AFTER_PARIS } from '../js/model.js';
+    import { createLearner, LEARN_VOCAB, softmax, distribution, sample, mulberry32, embeddingFor, LATENT, similarity, nearest, SENTENCE, attentionFrom, glowColor, DOG_CONTEXTS, FACETS, NEXT_FRANCE, NEXT_AFTER_PARIS } from '../js/model.js';
     import { ITEMS } from '../js/knowledge.js';
 
     const out = document.getElementById('out');
@@ -115,8 +115,41 @@
       SENTENCE.forEach((_, i) => { if (i < 1) return; const w = attentionFrom(i, 'B'); if (w.indexOf(Math.max(...w)) !== i) throw new Error(`token ${i}`); });
     });
 
+
+    // ---- learning ----
+    const trained = (n, seed = 2) => { const L = createLearner(seed); for (let i = 0; i < n; i++) L.read(); return L; };
+    const d2 = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
+    t('learner has 65 weights', () => eq(createLearner().weightCount, 65));
+    t('learner is deterministic for a seed', () => {
+      const a = trained(120), b = trained(120);
+      eq(JSON.stringify(a.embedding('dog')), JSON.stringify(b.embedding('dog')));
+    });
+    t('learning lowers the average miss a lot, and never below the text\'s own uncertainty', () => {
+      const L = createLearner(); const before = L.meanLoss();
+      for (let i = 0; i < 400; i++) L.read();
+      const after = L.meanLoss();
+      if (!(before > 2.2)) throw new Error('start miss ' + before);
+      if (!(after < 1.3)) throw new Error('end miss ' + after);
+      if (!(after > 0.8)) throw new Error('should not reach zero: ' + after);
+    });
+    t('before learning, the guess after "dog" is nearly flat; after, it is concentrated', () => {
+      const L = createLearner(); const flat = L.predict('dog')[0].p;
+      for (let i = 0; i < 400; i++) L.read();
+      const top = L.predict('dog'); const mass = top.filter((x) => ['chased', 'ate', 'slept', '.'].includes(x.token)).reduce((a, x) => a + x.p, 0);
+      if (!(flat < 0.4)) throw new Error('flat ' + flat);
+      if (!(mass > 0.9)) throw new Error('mass ' + mass);
+    });
+    t('after learning, dog sits near cat and wolf and far from car (no one told it so)', () => {
+      for (const seed of [1, 2, 3]) {
+        const L = trained(1500, seed); const e = (w) => L.embedding(w);
+        if (!(d2(e('dog'), e('cat')) < d2(e('dog'), e('car')))) throw new Error('cat vs car, seed ' + seed);
+        if (!(d2(e('dog'), e('wolf')) < d2(e('dog'), e('truck')))) throw new Error('wolf vs truck, seed ' + seed);
+        if (!(d2(e('car'), e('truck')) < d2(e('car'), e('dog')))) throw new Error('car-truck, seed ' + seed);
+      }
+    });
+
     // ---- story integrity (reads the screen sources) ----
-    const files = Array.from({ length: 13 }, (_, i) => `../js/screens/s${String(i).padStart(2, '0')}.js`);
+    const files = Array.from({ length: 14 }, (_, i) => `../js/screens/s${String(i).padStart(2, '0')}.js`);
     const sources = await Promise.all(files.map((f) => fetch(f).then((r) => r.text())));
 
     t('knowledge ids are unique and every ctx.learn() id exists', () => {
@@ -128,11 +161,11 @@
       const learned = new Set(sources.flatMap((s) => [...s.matchAll(/ctx\.learn\('([a-z]+)'\)/g)].map((m) => m[1])));
       for (const i of ITEMS.filter((i) => !i.ahead)) if (!learned.has(i.id)) throw new Error(`${i.id} never learned`);
     });
-    t('the last three items stay open (they are the next chapters)', () => {
-      eq(ITEMS.filter((i) => i.ahead).map((i) => i.id).join(), 'learning,reasoning,agents');
+    t('the last two items stay open (they are the next chapters)', () => {
+      eq(ITEMS.filter((i) => i.ahead).map((i) => i.id).join(), 'reasoning,agents');
     });
-    t('honesty rule: every simplified visual says so on screen (screens 2 to 8)', () => {
-      for (let i = 2; i <= 8; i++) if (!/Simplified:/.test(sources[i])) throw new Error(`screen ${i} lacks a "Simplified:" note`);
+    t('honesty rule: every simplified visual says so on screen (screens 2 to 8 and 13)', () => {
+      for (const i of [2, 3, 4, 5, 6, 7, 8, 13]) if (!/Simplified:/.test(sources[i])) throw new Error(`screen ${i} lacks a "Simplified:" note`);
     });
     t('no anthropomorphic phrasing in screen copy', () => {
       const banned = [/\bthe AI thinks\b/i, /\bthe AI remembers\b/i, /\bthe AI knows\b/i, /\bthe model thinks\b/i, /\bthe model remembers\b/i, /\bit understands\b/i];
@@ -144,7 +177,7 @@
     t('there is no right answer: screen 10 never says Correct', () => {
       if (/Correct|Wrong|Right!/i.test(sources[10])) throw new Error('graded language');
     });
-    t('screens 0 to 12 each export meta and a default run()', async () => {
+    t('screens 0 to 13 each export meta and a default run()', async () => {
       for (const s of sources) if (!/export const meta/.test(s) || !/export default async function/.test(s)) throw new Error('missing export');
     });
 

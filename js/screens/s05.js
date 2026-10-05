@@ -134,5 +134,5 @@ export default async function run(ctx) {
   await ctx.say('Described mechanically, it’s computing relationships within the context. Whether that counts as “thinking about” the sentence is the question we’ll end on.', { cls: 'mid', hold: 2200 });
   await ctx.say('Simplified: these patterns are hand-written. Real models learn many patterns at once, and each word can only look backward. Each word’s percentages add up to 100%, and the share on the word itself is shown too.', { cls: 'caption', hold: 500 });
   await ctx.say('If every word can draw on the words before it, what could happen when you stack dozens of these layers?', { cls: 'mid', hold: 600 });
-  await ctx.button('Open the black box');
+  await ctx.button('Look inside');
 }

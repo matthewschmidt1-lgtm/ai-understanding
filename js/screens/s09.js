@@ -3,7 +3,7 @@ import { h } from '../ui.js';
 
 export const meta = { title: 'The moment of doubt' };
 
-const HUMAN = ['images', 'sounds', 'memories', 'emotions', 'physical experience', 'language', 'relationships'];
+const HUMAN = ['images', 'sounds', 'memories', 'emotions', 'physical experience', 'language', 'relationships', 'neural computation', 'predictions'];
 const LLM = ['representations', 'relationships', 'context', 'transformations', 'probabilities', 'predictions'];
 
 function tree(kind, title, items) {
@@ -20,7 +20,7 @@ export default async function run(ctx) {
   await ctx.clear({ ms: 100 });
   ctx.theme('ink');
   ctx.mix(0.8);
-  await ctx.wait(1400);
+  await ctx.wait(500);
   await ctx.say('Wait.', { cls: 'hero-word', hold: 2600 });
   await ctx.say('You just watched an AI turn numbers into language.', { cls: 'mid', hold: 2800 });
   await ctx.say('But humans do something strangely similar.', { cls: 'mid', hold: 2600 });

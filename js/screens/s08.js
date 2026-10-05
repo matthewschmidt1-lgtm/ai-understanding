@@ -11,7 +11,7 @@ function topRows(dist, n = 4) {
   const sorted = dist.filter((d) => !d.token.startsWith('(')).sort((a, b) => b.p - a.p); // "(rare)" and "(other)" fold into the last row
   const top = sorted.slice(0, n);
   const rest = 1 - top.reduce((s, d) => s + d.p, 0);
-  return rest > 0.0005 ? [...top, { token: '… all others', p: rest, other: true }] : top;
+  return [...top, { token: '… all others', p: Math.max(rest, 0), other: true }];
 }
 
 function chart() {
@@ -88,7 +88,7 @@ export default async function run(ctx) {
     h('span', { class: 'again', 'aria-hidden': 'true' }, h('b', {}, '↺'), ' repeat'),
   );
   await ctx.add(loop, { hold: 1800 });
-  await ctx.say('One token at a time.', { cls: 'big', hold: 1900 });
+  await ctx.say('One token at a time.', { cls: 'big', hold: 3400 });
 
   // Play: same scores, different draws.
   await ctx.clear();

@@ -1,7 +1,7 @@
 // Boot, routing and the shared atmosphere. Screens are loaded on demand, one module each.
 import { h, clamp } from './ui.js';
 import { state } from './state.js';
-import { Aborted, createContext, motion } from './engine.js';
+import { Aborted, createContext, motion, skipPause } from './engine.js';
 import { initKnowledge, prime, resetKnowledge, setOpen } from './knowledge.js';
 
 const LOADERS = [
@@ -18,11 +18,12 @@ const LOADERS = [
   () => import('./screens/s10.js'),
   () => import('./screens/s11.js'),
   () => import('./screens/s12.js'),
+  () => import('./screens/s13.js'),
 ];
 const LAST = LOADERS.length - 1;
 
 // How far human (clay) and machine (slate) have blended by each screen.
-const MIX = [0, 0.04, 0.1, 0.18, 0.28, 0.38, 0.48, 0.58, 0.68, 0.76, 0.84, 1, 1];
+const MIX = [0, 0.04, 0.1, 0.18, 0.28, 0.38, 0.48, 0.58, 0.68, 0.76, 0.84, 1, 1, 1];
 
 const stage = document.getElementById('stage');
 let token = 0;
@@ -104,6 +105,17 @@ window.addEventListener('pointermove', (e) => {
 });
 window.addEventListener('keydown', (e) => {
   if (e.key === 'Tab') document.documentElement.dataset.input = 'keyboard';
+  // One shortcut for impatient readers: space or the right arrow cuts the current pause short.
+  const free = document.activeElement === document.body || document.activeElement === stage || document.activeElement?.classList.contains('screen');
+  if ((e.key === ' ' || e.key === 'ArrowRight') && free && document.body.dataset.screen !== '0') {
+    e.preventDefault();
+    skipPause();
+  }
+});
+// Tapping empty space or the story text does the same.
+stage.addEventListener('pointerup', (e) => {
+  if (document.body.dataset.screen === '0') return;
+  if (e.target === stage || e.target.classList.contains('screen') || e.target.classList.contains('col') || e.target.classList.contains('line')) skipPause();
 });
 
 window.addEventListener('popstate', () => {

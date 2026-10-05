@@ -1,5 +1,5 @@
 // "What you now know": a quiet corner list that fills in as ideas are met.
-// Deliberately not a progress bar: the last three items stay open because they are the next chapters.
+// Deliberately not a progress bar: the last two items stay open because they are the next chapters.
 import { h } from './ui.js';
 import { state } from './state.js';
 
@@ -11,7 +11,7 @@ export const ITEMS = [
   { id: 'attention', label: 'Attention', at: 5 },
   { id: 'transformer', label: 'Transformer', at: 6 },
   { id: 'probability', label: 'Probability', at: 8 },
-  { id: 'learning', label: 'Learning', ahead: true },
+  { id: 'learning', label: 'Learning', at: 13 },
   { id: 'reasoning', label: 'Reasoning', ahead: true },
   { id: 'agents', label: 'Agents', ahead: true },
 ];

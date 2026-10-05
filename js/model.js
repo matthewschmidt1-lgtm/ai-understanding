@@ -91,7 +91,7 @@ export const DOG_CONTEXTS = [
   { text: 'The dog in the logo represents loyalty.', pulls: ['logo', 'loyalty'], facets: { animal: 0.3, motion: 0.04, size: 0.08, symbol: 0.94, space: 0.05 } },
 ];
 
-// Blend facet colours by (sharpened) weight: the glow is computed, not picked per sentence.
+// Blend facet colors by (sharpened) weight: the glow is computed, not picked per sentence.
 export function glowColor(facets) {
   let wsum = 0;
   const acc = [0, 0, 0];
@@ -125,7 +125,7 @@ const HEAD_B = SENTENCE.map((_, i) => Array.from({ length: i + 1 }, (_, j) => Ma
 
 export const HEADS = [
   { id: 'A', label: 'Pattern A', note: 'follows who or what a word refers to' },
-  { id: 'B', label: 'Pattern B', note: 'stays close to the neighbouring words' },
+  { id: 'B', label: 'Pattern B', note: 'stays close to the neighboring words' },
 ];
 
 function normalize(row) {
@@ -184,4 +184,86 @@ export function sample(dist, rnd = Math.random) {
     if (r <= 0) return d.token;
   }
   return dist[dist.length - 1].token;
+}
+
+// ---------- learning ----------
+// A genuinely tiny language model that really trains in the browser: it reads sentences and
+// learns to guess the next word. Each word has a 2-number embedding E and the output side has
+// weights U and biases b: 13 x 2 + 13 x 2 + 13 = 65 weights in all. Plain gradient descent on
+// the cross-entropy of the next-word guess, the same rule at the heart of real training.
+export const LEARN_VOCAB = ['the', 'dog', 'cat', 'wolf', 'car', 'truck', 'chased', 'ate', 'slept', 'drove', 'stopped', 'fast', '.'];
+export const LEARN_TEXT = [
+  'the dog chased the cat .',
+  'the wolf chased the dog .',
+  'the cat chased the wolf .',
+  'the dog ate .',
+  'the cat ate .',
+  'the wolf ate .',
+  'the dog slept .',
+  'the cat slept .',
+  'the wolf slept .',
+  'the car drove fast .',
+  'the truck drove fast .',
+  'the car stopped .',
+  'the truck stopped .',
+];
+
+export function createLearner(seed = 2, { lr = 0.3 } = {}) {
+  const rnd = mulberry32(seed);
+  const V = LEARN_VOCAB.length;
+  const index = Object.fromEntries(LEARN_VOCAB.map((w, i) => [w, i]));
+  const E = Array.from({ length: V }, () => [rnd() * 2 - 1, rnd() * 2 - 1]);
+  const U = Array.from({ length: V }, () => [rnd() * 2 - 1, rnd() * 2 - 1]);
+  const b = new Array(V).fill(0);
+  const sentences = LEARN_TEXT.map((s) => s.split(' ').map((w) => index[w]));
+  const pairs = sentences.flatMap((s) => s.slice(1).map((next, i) => [s[i], next]));
+  const history = [];
+  let reads = 0;
+
+  const probsFor = (c) => softmax(U.map((u, k) => u[0] * E[c][0] + u[1] * E[c][1] + b[k]));
+
+  function meanLoss() {
+    return pairs.reduce((sum, [c, n]) => sum - Math.log(probsFor(c)[n]), 0) / pairs.length;
+  }
+  history.push([0, meanLoss()]);
+
+  // Read one sentence: for every word, guess the next, measure the miss, nudge every weight a little.
+  function read(which = Math.floor(rnd() * sentences.length)) {
+    const s = sentences[which];
+    for (let i = 0; i < s.length - 1; i++) {
+      const c = s[i];
+      const p = probsFor(c);
+      const g = p.slice();
+      g[s[i + 1]] -= 1;
+      const gE = [0, 0];
+      for (let k = 0; k < V; k++) {
+        gE[0] += g[k] * U[k][0];
+        gE[1] += g[k] * U[k][1];
+      }
+      for (let k = 0; k < V; k++) {
+        U[k][0] -= lr * g[k] * E[c][0];
+        U[k][1] -= lr * g[k] * E[c][1];
+        b[k] -= lr * g[k];
+      }
+      E[c][0] -= lr * gE[0];
+      E[c][1] -= lr * gE[1];
+    }
+    reads++;
+    return { which, text: LEARN_TEXT[which] };
+  }
+
+  return {
+    vocab: LEARN_VOCAB,
+    weightCount: V * 2 + V * 2 + V,
+    get reads() {
+      return reads;
+    },
+    history,
+    meanLoss,
+    read,
+    record: () => history.push([reads, meanLoss()]),
+    embedding: (word) => E[index[word]].slice(),
+    // The model's guess for the word after `word`, most likely first.
+    predict: (word) => probsFor(index[word]).map((p, k) => ({ token: LEARN_VOCAB[k], p })).sort((a, b2) => b2.p - a.p),
+  };
 }

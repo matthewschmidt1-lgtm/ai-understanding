@@ -1,5 +1,5 @@
 // Screen 4, meaning depends on context. Same word, three sentences, three different representations.
-// The arcs show which neighbouring words pull on "dog" in each one.
+// The arcs show which neighboring words pull on "dog" in each one.
 import { h } from '../ui.js';
 import { DOG_CONTEXTS, FACETS, glowColor } from '../model.js';
 

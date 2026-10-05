@@ -34,6 +34,8 @@ const liveRegion = () => document.getElementById('sr-live');
 // New content below the fold scrolls gently into view; nothing above it moves.
 // A screen can pin its main figure: scrolling for new content never pushes the pinned figure under the header.
 let pinned = null;
+let skipAll = () => {};
+export const skipPause = () => skipAll();
 function keepInView(el) {
   requestAnimationFrame(() => {
     const r = el.getBoundingClientRect();
@@ -63,7 +65,21 @@ export function createContext({ root, col, signal }) {
       );
     });
 
-  const wait = (ms) => guard(new Promise((r) => setTimeout(r, ms * motion.k)));
+  // Pauses can be cut short by the visitor (see skipPause): every pending wait resolves at once.
+  const waiters = new Set();
+  skipAll = () => [...waiters].forEach((done) => done());
+  const wait = (ms) =>
+    guard(
+      new Promise((resolve) => {
+        const done = () => {
+          clearTimeout(id);
+          waiters.delete(done);
+          resolve();
+        };
+        const id = setTimeout(done, ms * motion.k);
+        waiters.add(done);
+      }),
+    );
 
   const reveal = (el) => requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('in')));
 

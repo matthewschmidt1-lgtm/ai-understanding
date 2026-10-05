@@ -9,12 +9,12 @@ const chain = (kind, items, label) =>
 function reveal() {
   return h(
     'figure',
-    { class: 'final', 'aria-label': 'Around the word dog: a human goes from experience to representation to understanding, a model goes from data to representation to computation to prediction to understanding. Both end at the same open question.' },
+    { class: 'final', 'aria-label': 'Around the word dog: a human goes from experience to representation to computation to prediction to understanding, a model goes from data to representation to computation to prediction to understanding. Both end at the same open question.' },
     h('div', { class: 'f-word' }, 'dog'),
     h(
       'div',
       { class: 'f-grid' },
-      h('div', { class: 'f-col human' }, h('h3', { 'aria-hidden': 'true' }, 'Human'), chain('human', ['experience', 'representation'], 'Human')),
+      h('div', { class: 'f-col human' }, h('h3', { 'aria-hidden': 'true' }, 'Human'), chain('human', ['experience', 'representation', 'computation', 'prediction'], 'Human')),
       h('div', { class: 'f-col ai' }, h('h3', { 'aria-hidden': 'true' }, 'AI'), chain('ai', ['data', 'representation', 'computation', 'prediction'], 'AI')),
     ),
     h('svg', { class: 'f-join', viewBox: '0 0 100 24', preserveAspectRatio: 'none', 'aria-hidden': 'true' }, h('path', { d: 'M25 0 C 25 16, 50 8, 50 24', class: 'j human', pathLength: 1 }), h('path', { d: 'M75 0 C 75 16, 50 8, 50 24', class: 'j ai', pathLength: 1 })),
@@ -39,7 +39,7 @@ export default async function run(ctx) {
   await ctx.add(fig, { hold: 1200 });
   await ctx.wait(4200);
   await ctx.say('Maybe the interesting question isn’t whether AI thinks like us.', { cls: 'mid', hold: 3000 });
-  await ctx.say('Maybe it’s how something so different can produce behavior that looks so familiar.', { cls: 'mid', hold: 3400 });
+  await ctx.say('Maybe it’s how something so different can produce behavior that looks so familiar.', { cls: 'mid', hold: 5200 });
 
   await ctx.clear();
   await ctx.say('One last thing. In your own words, complete this sentence.', { cls: 'mid', hold: 500 });

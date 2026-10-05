@@ -24,8 +24,8 @@ function field() {
   return { wrap, lines, pts, place, make };
 }
 
-// Draw lines from `id` to its nearest neighbours, labelled with the illustrative similarity.
-function neighbours(f, id, positions, k = 3) {
+// Draw lines from `id` to its nearest neighbors, labelled with the illustrative similarity.
+function neighbors(f, id, positions, k = 3) {
   f.lines.replaceChildren();
   f.wrap.querySelectorAll('.simv').forEach((n) => n.remove());
   f.wrap.querySelectorAll('.pt').forEach((p) => p.classList.toggle('sel', p.dataset.id === id));
@@ -40,8 +40,9 @@ function neighbours(f, id, positions, k = 3) {
 export default async function run(ctx) {
   const q = await ctx.say('Which is more like “dog”?', { cls: 'mid', hold: 600 });
   const f = field();
-  await ctx.add(f.wrap, { hold: 700 });
+  await ctx.add(f.wrap, { hold: 500 });
   ctx.pin(f.wrap);
+  const note = await ctx.say('A flat map. Where the words sit is placed by hand, for illustration.', { cls: 'caption', hold: 200 });
   ctx.learn('latent');
 
   // Cat, wolf or car: the visitor picks one of the words on the map.
@@ -59,8 +60,6 @@ export default async function run(ctx) {
   const related = picked !== 'car';
 
   if (related) {
-    f.place(picked, picked === 'cat' ? [44, 60] : [38, 34]);
-    await ctx.wait(900);
     await ctx.say('Exactly.', { cls: 'big', hold: 900 });
     await ctx.say('You’re thinking about a relationship.', { cls: 'mid', hold: 1700 });
   } else {
@@ -102,12 +101,12 @@ export default async function run(ctx) {
   f.wrap.classList.add('explore');
   await ctx.wait(900);
 
-  neighbours(f, 'dog', LATENT.settled);
+  neighbors(f, 'dog', LATENT.settled);
   f.wrap.addEventListener('click', (e) => {
     const p = e.target.closest('.pt');
-    if (p) neighbours(f, p.dataset.id, LATENT.settled);
+    if (p) neighbors(f, p.dataset.id, LATENT.settled);
   });
   await ctx.say('This is the intuition behind “latent space.”', { cls: 'caption strong', hold: 400 });
-  await ctx.say('Simplified: a flat shadow of a space with thousands of dimensions, with positions placed by hand. The small numbers are similarity (1 means identical). Tap any word to see its nearest neighbours.', { cls: 'caption', hold: 500 });
+  await ctx.say('Simplified: a flat shadow of a space with thousands of dimensions, with positions placed by hand. The small numbers are similarity (1 means identical). Tap any word to see its nearest neighbors.', { cls: 'caption', hold: 500 });
   await ctx.button('Next');
 }
