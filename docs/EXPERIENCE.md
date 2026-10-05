@@ -26,11 +26,12 @@ js/state.js           per-visit answers (sessionStorage, memory fallback)
 js/model.js           the deterministic "model": softmax, attention rows, latent positions, embeddings
 js/ui.js              h() DOM/SVG helper
 js/layerviz.js        the looping figures inside each black-box layer (screen 6)
-js/screens/sNN.js     one module per screen, loaded on demand
+js/screens/sNN.js     one short file per page: stitches concept sections together, loaded on demand
+js/sections/*.js      one file per concept (dog, numbers, latent, context, attention, blackbox, nexttoken, doubt, verdict, reveal, hub, learning, reasoning)
 tests/run.html        26 browser tests (model maths + story-integrity rules)
 ```
 
-**Screen contract.** `export const meta` and `export default async function run(ctx)`. A screen is a script of beats. When the visitor leaves, an `AbortSignal` rejects every pending beat, so nothing keeps running behind the next screen.
+**Page and section contract.** A page exports `meta` and `run(ctx)` and calls one or more sections in order (clearing the stage between them). A section is a script of beats. When the visitor leaves, an `AbortSignal` rejects every pending beat, so nothing keeps running behind the next screen.
 
 **State schema** (`sessionStorage["dau.v1"]`, never leaves the browser):
 

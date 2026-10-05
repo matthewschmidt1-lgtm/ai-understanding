@@ -1,7 +1,5 @@
-// Screen 11, the final reveal. Two different roads into "dog", one shared question, and the visitor's own words.
+// Section: the final reveal. Two different roads into "dog", one shared question, and the visitor's own words.
 import { h } from '../ui.js';
-
-export const meta = { title: 'The final reveal' };
 
 const chain = (kind, items, label) =>
   h('ol', { class: `chain ${kind}`, 'aria-label': label }, ...items.map((t, i) => h('li', { style: { '--i': i } }, t)));
@@ -36,15 +34,15 @@ function completion() {
 
 export default async function run(ctx) {
   const fig = reveal();
-  await ctx.add(fig, { hold: 1200 });
-  await ctx.wait(4200);
-  await ctx.say('Maybe the interesting question isn’t whether AI thinks like us.', { cls: 'mid', hold: 3000 });
-  await ctx.say('Maybe it’s how something so different can produce behavior that looks so familiar.', { cls: 'mid', hold: 7000 });
+  await ctx.add(fig, { hold: 800 });
+  await ctx.wait(2200);
+  await ctx.say('Maybe the interesting question isn’t whether AI thinks like us.', { cls: 'mid', hold: 1800 });
+  await ctx.say('Maybe it’s how something so different can produce behavior that looks so familiar.', { cls: 'mid', hold: 3800 });
 
   await ctx.clear({ keep: [fig] });
-  await ctx.say('One last thing. In your own words, complete this sentence.', { cls: 'mid', hold: 500 });
+  await ctx.say('One last thing. In your own words, complete this sentence.', { cls: 'mid', hold: 250 });
   const c = completion();
-  await ctx.add(c.form, { hold: 400 });
+  await ctx.add(c.form, { hold: 250 });
 
   const mine = await ctx.guard(
     new Promise((resolve) => {
@@ -60,8 +58,8 @@ export default async function run(ctx) {
   if (mine && (mine.a || mine.b)) {
     ctx.state.set('sentence', mine);
     const quote = h('blockquote', { class: 'mine' }, 'An LLM isn’t simply ', h('em', {}, mine.a || '…'), '. It’s ', h('em', {}, mine.b || '…'), '.');
-    await ctx.add(quote, { hold: 2600 });
-    await ctx.say('That is yours. There’s no grading here.', { cls: 'quiet', hold: 900 });
+    await ctx.add(quote, { hold: 1400 });
+    await ctx.say('That is yours. There’s no grading here.', { cls: 'quiet', hold: 300 });
   } else {
     await ctx.say('That’s fine. The question will keep.', { cls: 'quiet', hold: 1200 });
   }

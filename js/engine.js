@@ -123,7 +123,7 @@ export function createContext({ root, col, signal }) {
   }
 
   // Fade everything off the stage (except `keep`) and wait for it to leave.
-  async function clear({ keep = [], ms = 650 } = {}) {
+  async function clear({ keep = [], ms = 500 } = {}) {
     const gone = [...col.children].filter((c) => !keep.includes(c));
     gone.forEach((c) => c.classList.add('out'));
     await wait(ms);

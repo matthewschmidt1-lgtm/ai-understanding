@@ -289,7 +289,7 @@ export function xorNet(a, b, { middle = true } = {}) {
 }
 
 // Part 2: a stylized "work budget". A fixed-depth machine can do only so many steps in one pass.
-// Written steps re-enter the context (as on screen 8), so each word buys another pass.
+// Written steps re-enter the context (as in the next-word loop), so each word buys another pass.
 export const WORK_PROBLEMS = [
   { id: 'a', text: '3 + 4', start: 3, ops: [['+', 4]] },
   { id: 'b', text: '(3 + 4) × 2', start: 3, ops: [['+', 4], ['×', 2]] },

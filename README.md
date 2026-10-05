@@ -10,11 +10,11 @@ Zero build, no framework, no backend. Everything is a deterministic, inspectable
 python3 scripts/dev.py 4190     # http://localhost:4190   (no Node needed)
 ```
 
-Jump to any screen with `#/0` to `#/12`, for example `http://localhost:4190/#/5`.
+Jump to any page with `#/0` to `#/10`, for example `http://localhost:4190/#/3`.
 
 ## Test it
 
-Open `http://localhost:4190/tests/run.html`. The title reads `PASS 26` when everything is green. The tests cover the model maths (softmax, temperature, attention, latent space) and the story rules in `CLAUDE.md`.
+Open `http://localhost:4190/tests/run.html`. The title reads `PASS 36` when everything is green. The tests cover the model maths (softmax, temperature, attention, latent space) and the story rules in `CLAUDE.md`.
 
 ## Deploy
 

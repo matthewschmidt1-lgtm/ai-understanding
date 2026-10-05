@@ -1,11 +1,9 @@
-// Screen 14, how AI reasons. Two things you can run yourself: a network whose weights are frozen
+// Section: how AI reasons. Two things you can run yourself: a network whose weights are frozen
 // but which computes something one layer cannot, and a fixed machine that gets a hard problem right
 // only when it is allowed to write its steps down.
 import { h } from '../ui.js';
 import { motion } from '../engine.js';
 import { XOR_WEIGHTS, xorNet, xorTarget, WORK_PROBLEMS, work, trueAnswer } from '../model.js';
-
-export const meta = { title: 'How AI reasons' };
 
 const onOff = (v) => (v ? 'on' : 'off');
 const timeout = (ms) => new Promise((r) => setTimeout(r, ms * motion.k));
@@ -229,10 +227,10 @@ export default async function run(ctx) {
   await ctx.wait(1500);
   await ctx.clear({ keep: [wk], ms: 350 });
   await ctx.say('Same frozen numbers. The difference is how much room it was given.', { cls: 'big', hold: 800 });
-  await ctx.say('Each word the model writes goes back in as input, as on screen 8. Writing steps down gives the same weights another pass at the problem.', { cls: 'mid', hold: 4800 });
+  await ctx.say('Each word the model writes goes back in as input, just like the next-word loop you saw earlier. Writing steps down gives the same weights another pass at the problem.', { cls: 'mid', hold: 4800 });
   await ctx.clear({ keep: [wk], ms: 350 });
   await ctx.say('Simplified: this is a step-counting stand-in, not a real model. Real models can do many steps in one pass, and the steps they write are not always a faithful account of what happened inside.', { cls: 'caption', hold: 600 });
   await ctx.say('If extra words buy extra computing, what changes when a model also gets tools to use, memory to keep, and a goal to pursue?', { cls: 'mid', hold: 600 });
   await ctx.button('Back to the chapters');
-  location.hash = '#/12';
+  location.hash = '#/8';
 }

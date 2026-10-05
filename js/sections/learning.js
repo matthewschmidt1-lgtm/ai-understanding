@@ -1,10 +1,8 @@
-// Screen 13, how AI learns. A tiny model really trains here: it reads sentences, guesses the next
-// word, and nudges its weights. The word map from screen 3 builds itself.
+// Section: how AI learns. A tiny model really trains here: it reads sentences, guesses the next
+// word, and nudges its weights. The word map from the earlier page builds itself.
 import { h } from '../ui.js';
 import { motion } from '../engine.js';
 import { createLearner } from '../model.js';
-
-export const meta = { title: 'How AI learns' };
 
 const SHOWN = ['the', 'dog', 'cat', 'wolf', 'car', 'truck', 'chased', 'ate', 'slept', 'drove', 'stopped', 'fast'];
 const GROUPS = [
@@ -200,5 +198,5 @@ export default async function run(ctx) {
   await ctx.say(`Simplified: this model has ${L.weightCount} weights, is fed 13 short sentences, and looks only one word back. Real models weigh the whole context, use thousands of dimensions and learn from vastly more text. The nudging rule, gradient descent, is the same idea.`, { cls: 'caption', hold: 800 });
   await ctx.say('If a few hundred nudges can sort words into neighborhoods, what could billions of weights and an enormous amount of text build?', { cls: 'mid', hold: 600 });
   await ctx.button('Back to the chapters');
-  location.hash = '#/12';
+  location.hash = '#/8';
 }

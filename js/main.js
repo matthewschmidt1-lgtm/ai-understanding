@@ -4,27 +4,11 @@ import { state } from './state.js';
 import { Aborted, createContext, motion, skipPause } from './engine.js';
 import { initKnowledge, prime, resetKnowledge, setOpen } from './knowledge.js';
 
-const LOADERS = [
-  () => import('./screens/s00.js'),
-  () => import('./screens/s01.js'),
-  () => import('./screens/s02.js'),
-  () => import('./screens/s03.js'),
-  () => import('./screens/s04.js'),
-  () => import('./screens/s05.js'),
-  () => import('./screens/s06.js'),
-  () => import('./screens/s07.js'),
-  () => import('./screens/s08.js'),
-  () => import('./screens/s09.js'),
-  () => import('./screens/s10.js'),
-  () => import('./screens/s11.js'),
-  () => import('./screens/s12.js'),
-  () => import('./screens/s13.js'),
-  () => import('./screens/s14.js'),
-];
+const LOADERS = Array.from({ length: 11 }, (_, i) => () => import(`./screens/s${String(i).padStart(2, '0')}.js`));
 const LAST = LOADERS.length - 1;
 
 // How far human (clay) and machine (slate) have blended by each screen.
-const MIX = [0, 0.04, 0.1, 0.18, 0.28, 0.38, 0.48, 0.58, 0.68, 0.76, 0.84, 1, 1, 1, 1];
+const MIX = [0, 0.12, 0.24, 0.38, 0.52, 0.66, 0.8, 1, 1, 1, 1];
 
 const stage = document.getElementById('stage');
 let token = 0;
@@ -43,7 +27,7 @@ async function go(n, { push = true, initial = false } = {}) {
   const old = stage.querySelector('.screen');
   if (old && !initial) {
     old.classList.add('leaving');
-    await new Promise((r) => setTimeout(r, 600 * motion.k));
+    await new Promise((r) => setTimeout(r, 450 * motion.k));
     if (mine !== token) return;
   }
 
@@ -79,7 +63,7 @@ async function go(n, { push = true, initial = false } = {}) {
   const ctx = createContext({ root, col, signal: controller.signal });
   try {
     await mod.default(ctx);
-    if (mine === token && n < LAST) go(n + 1);
+    if (mine === token && n < LAST && !mod.meta.terminal) go(n + 1); // the hub and the optional chapters end the main path
   } catch (e) {
     if (!(e instanceof Aborted)) console.error(e);
   }

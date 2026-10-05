@@ -183,8 +183,14 @@
     });
 
     // ---- story integrity (reads the screen sources) ----
-    const files = Array.from({ length: 15 }, (_, i) => `../js/screens/s${String(i).padStart(2, '0')}.js`);
-    const sources = await Promise.all(files.map((f) => fetch(f).then((r) => r.text())));
+    // Each page is a short file that stitches concept sections together; read the page and every section it imports.
+    const pageFiles = Array.from({ length: 11 }, (_, i) => `../js/screens/s${String(i).padStart(2, '0')}.js`);
+    const pageOnly = await Promise.all(pageFiles.map((f) => fetch(f).then((r) => r.text())));
+    const sources = await Promise.all(pageOnly.map(async (src) => {
+      const parts = [src];
+      for (const m of src.matchAll(/from '\.\.\/sections\/([a-z]+)\.js'/g)) parts.push(await fetch(`../js/sections/${m[1]}.js`).then((r) => r.text()));
+      return parts.join('\n');
+    }));
 
     t('knowledge ids are unique and every ctx.learn() id exists', () => {
       eq(new Set(ITEMS.map((i) => i.id)).size, ITEMS.length, 'unique ids');
@@ -198,21 +204,21 @@
     t('the last item stays open (it is the next chapter)', () => {
       eq(ITEMS.filter((i) => i.ahead).map((i) => i.id).join(), 'agents');
     });
-    t('honesty rule: every simplified visual says so on screen (screens 2 to 8, 13 and 14)', () => {
-      for (const i of [2, 3, 4, 5, 6, 7, 8, 13, 14]) if (!/Simplified:/.test(sources[i])) throw new Error(`screen ${i} lacks a "Simplified:" note`);
+    t('honesty rule: every simplified visual says so on screen (pages 1 to 5, 9 and 10)', () => {
+      for (const i of [1, 2, 3, 4, 5, 9, 10]) if (!/Simplified:/.test(sources[i])) throw new Error(`screen ${i} lacks a "Simplified:" note`);
     });
     t('no anthropomorphic phrasing in screen copy', () => {
       const banned = [/\bthe AI thinks\b/i, /\bthe AI remembers\b/i, /\bthe AI knows\b/i, /\bthe model thinks\b/i, /\bthe model remembers\b/i, /\bit understands\b/i];
       sources.forEach((s, i) => banned.forEach((re) => { if (re.test(s)) throw new Error(`screen ${i}: ${re}`); }));
     });
     t('the story ends on a question, not a conclusion', () => {
-      if (!/understanding\?/.test(sources[11])) throw new Error('screen 11 should end on "understanding?"');
+      if (!/understanding\?/.test(sources[7])) throw new Error('page 7 should end on "understanding?"');
     });
-    t('there is no right answer: screen 10 never says Correct', () => {
-      if (/Correct|Wrong|Right!/i.test(sources[10])) throw new Error('graded language');
+    t('there is no right answer: the verdict page never says Correct', () => {
+      if (/Correct|Wrong|Right!/i.test(sources[6])) throw new Error('graded language');
     });
-    t('screens 0 to 14 each export meta and a default run()', async () => {
-      for (const s of sources) if (!/export const meta/.test(s) || !/export default async function/.test(s)) throw new Error('missing export');
+    t('pages 0 to 10 each export meta and a default run()', async () => {
+      for (const s of pageOnly) if (!/export const meta/.test(s) || !/export default async function/.test(s)) throw new Error('missing export');
     });
 
     out.innerHTML += `\n${passed} passed, ${failed} failed\n`;

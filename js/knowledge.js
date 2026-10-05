@@ -4,15 +4,15 @@ import { h } from './ui.js';
 import { state } from './state.js';
 
 export const ITEMS = [
-  { id: 'tokens', label: 'Tokens', at: 2 },
-  { id: 'embeddings', label: 'Embeddings', at: 2 },
-  { id: 'latent', label: 'Latent space', at: 3 },
-  { id: 'context', label: 'Context', at: 4 },
-  { id: 'attention', label: 'Attention', at: 5 },
-  { id: 'transformer', label: 'Transformer', at: 6 },
-  { id: 'probability', label: 'Probability', at: 8 },
-  { id: 'learning', label: 'Learning', at: 13 },
-  { id: 'reasoning', label: 'Reasoning', at: 14 },
+  { id: 'tokens', label: 'Tokens', at: 1 },
+  { id: 'embeddings', label: 'Embeddings', at: 1 },
+  { id: 'latent', label: 'Latent space', at: 2 },
+  { id: 'context', label: 'Context', at: 3 },
+  { id: 'attention', label: 'Attention', at: 3 },
+  { id: 'transformer', label: 'Transformer', at: 4 },
+  { id: 'probability', label: 'Probability', at: 5 },
+  { id: 'learning', label: 'Learning', at: 9 },
+  { id: 'reasoning', label: 'Reasoning', at: 10 },
   { id: 'agents', label: 'Agents', ahead: true },
 ];
 
