@@ -11,9 +11,11 @@ export class Aborted extends Error {}
 const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
 export const motion = {
   reduced: mq.matches,
-  // Pauses shrink under reduced motion so the story stays quick but never vanishes.
+  // Every pause is scaled by k. PACE slows the whole story down (phone readers asked for it);
+  // reduced motion shrinks pauses so the story stays quick but never vanishes.
+  PACE: 1.7,
   get k() {
-    return this.reduced ? 0.3 : 1;
+    return this.reduced ? 0.3 : this.PACE;
   },
 };
 function syncMotion() {

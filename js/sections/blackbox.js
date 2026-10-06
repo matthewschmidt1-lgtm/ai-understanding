@@ -82,7 +82,7 @@ export default async function run(ctx) {
   await ctx.guard(
     new Promise((resolve) => {
       stackEl.addEventListener('click', () => visited.size >= 2 && resolve());
-      setTimeout(resolve, 30000 * motion.k);
+      setTimeout(resolve, 30000);
     }),
   );
   await ctx.button('Run the words through it');
